@@ -1,0 +1,113 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 600" fill="none">
+  <defs>
+    <linearGradient id="skinGrad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#C68642"/>
+      <stop offset="100%" stop-color="#A0652A"/>
+    </linearGradient>
+    <linearGradient id="blazerGrad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#1B2A4A"/>
+      <stop offset="100%" stop-color="#152238"/>
+    </linearGradient>
+    <linearGradient id="hairGrad" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#2C1810"/>
+      <stop offset="100%" stop-color="#1A0F0A"/>
+    </linearGradient>
+    <linearGradient id="blouseGrad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#FFFFFF"/>
+      <stop offset="100%" stop-color="#F0EDE8"/>
+    </linearGradient>
+    <filter id="softShadow" x="-10%" y="-10%" width="120%" height="130%">
+      <feDropShadow dx="0" dy="4" stdDeviation="6" flood-color="#1B2A4A" flood-opacity="0.15"/>
+    </filter>
+  </defs>
+
+  <!-- Body / Blazer -->
+  <g filter="url(#softShadow)">
+    <path d="M140 320 C140 300, 155 280, 175 270 L225 270 C245 280, 260 300, 260 320 L270 520 L130 520 Z" fill="url(#blazerGrad)"/>
+    <path d="M175 270 L200 340 L185 270 Z" fill="#243556" opacity="0.6"/>
+    <path d="M225 270 L200 340 L215 270 Z" fill="#243556" opacity="0.6"/>
+    <circle cx="200" cy="360" r="4" fill="#D4A843"/>
+    <circle cx="200" cy="395" r="4" fill="#D4A843"/>
+    <path d="M185 270 L200 320 L215 270" fill="url(#blouseGrad)"/>
+    <path d="M180 268 Q200 290, 220 268" stroke="#D4A843" stroke-width="2" fill="none"/>
+    <circle cx="200" cy="285" r="4" fill="#D4A843"/>
+  </g>
+
+  <!-- Right arm (presenting / gesturing to the right) -->
+  <g>
+    <path d="M260 300 C290 290, 320 270, 340 260 C348 257, 355 260, 352 268" fill="url(#blazerGrad)"/>
+    <!-- Hand open palm -->
+    <g transform="translate(348, 255) rotate(15)">
+      <ellipse cx="0" cy="0" rx="16" ry="12" fill="url(#skinGrad)"/>
+      <rect x="-10" y="-26" width="5" height="16" rx="2.5" fill="url(#skinGrad)" transform="rotate(-10, -7, -18)"/>
+      <rect x="-3" y="-28" width="5" height="18" rx="2.5" fill="url(#skinGrad)"/>
+      <rect x="4" y="-28" width="5" height="18" rx="2.5" fill="url(#skinGrad)"/>
+      <rect x="11" y="-26" width="5" height="16" rx="2.5" fill="url(#skinGrad)" transform="rotate(10, 13, -18)"/>
+      <rect x="15" y="-6" width="5" height="12" rx="2.5" fill="url(#skinGrad)" transform="rotate(45, 17, 0)"/>
+    </g>
+  </g>
+
+  <!-- Left arm (at side) -->
+  <path d="M140 300 C125 320, 122 370, 130 420 C132 435, 140 440, 145 438" fill="url(#blazerGrad)"/>
+  <ellipse cx="142" cy="442" rx="14" ry="11" fill="url(#skinGrad)"/>
+
+  <!-- Neck -->
+  <rect x="185" y="248" width="30" height="28" rx="6" fill="url(#skinGrad)"/>
+
+  <!-- Head -->
+  <g filter="url(#softShadow)">
+    <ellipse cx="200" cy="190" rx="65" ry="75" fill="url(#skinGrad)"/>
+  </g>
+
+  <!-- Hair -->
+  <g>
+    <ellipse cx="200" cy="145" rx="72" ry="55" fill="url(#hairGrad)"/>
+    <path d="M128 170 C125 140, 135 115, 155 105 C140 130, 132 155, 135 180 Z" fill="url(#hairGrad)"/>
+    <path d="M272 170 C275 140, 265 115, 245 105 C260 130, 268 155, 265 180 Z" fill="url(#hairGrad)"/>
+    <ellipse cx="180" cy="130" rx="20" ry="8" fill="#3D2517" opacity="0.4"/>
+  </g>
+
+  <!-- Face -->
+  <g>
+    <path d="M160 170 Q172 162, 185 168" stroke="#2C1810" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+    <path d="M215 168 Q228 162, 240 170" stroke="#2C1810" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+    
+    <!-- Eyes (looking right toward gesture) -->
+    <ellipse cx="173" cy="185" rx="12" ry="10" fill="white"/>
+    <circle cx="178" cy="185" r="6" fill="#3D2517"/>
+    <circle cx="180" cy="183" r="2.5" fill="white"/>
+    <ellipse cx="227" cy="185" rx="12" ry="10" fill="white"/>
+    <circle cx="232" cy="185" r="6" fill="#3D2517"/>
+    <circle cx="234" cy="183" r="2.5" fill="white"/>
+    
+    <!-- Eyelashes -->
+    <path d="M161 180 L157 175" stroke="#2C1810" stroke-width="1.5" stroke-linecap="round"/>
+    <path d="M165 177 L163 172" stroke="#2C1810" stroke-width="1.5" stroke-linecap="round"/>
+    <path d="M239 180 L243 175" stroke="#2C1810" stroke-width="1.5" stroke-linecap="round"/>
+    <path d="M235 177 L237 172" stroke="#2C1810" stroke-width="1.5" stroke-linecap="round"/>
+    
+    <path d="M197 195 Q200 208, 195 212 Q200 215, 205 212 Q200 208, 203 195" stroke="#A0652A" stroke-width="1.5" fill="none" opacity="0.6"/>
+    
+    <!-- Confident smile -->
+    <path d="M180 225 Q200 245, 220 225" stroke="#8B4513" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+    <path d="M185 228 Q200 238, 215 228" fill="#C4735A" opacity="0.7"/>
+    
+    <ellipse cx="158" cy="215" rx="12" ry="6" fill="#D4886B" opacity="0.3"/>
+    <ellipse cx="242" cy="215" rx="12" ry="6" fill="#D4886B" opacity="0.3"/>
+
+    <circle cx="133" cy="200" r="5" fill="#D4A843"/>
+    <circle cx="133" cy="210" r="3" fill="#D4A843"/>
+    <circle cx="267" cy="200" r="5" fill="#D4A843"/>
+    <circle cx="267" cy="210" r="3" fill="#D4A843"/>
+  </g>
+
+  <!-- Skirt -->
+  <path d="M130 520 C130 520, 145 580, 130 600 L270 600 C255 580, 270 520, 270 520 Z" fill="#1B2A4A"/>
+
+  <!-- Gold brooch -->
+  <g transform="translate(170, 290)">
+    <circle cx="0" cy="0" r="8" fill="#D4A843"/>
+    <circle cx="0" cy="0" r="5" fill="#E8C76B"/>
+    <circle cx="0" cy="0" r="2" fill="#D4A843"/>
+  </g>
+</svg>

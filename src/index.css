@@ -1,0 +1,138 @@
+@import "tailwindcss";
+
+/* ============================================================
+   MARTHA VIRTUAL ASSISTANT — Design System
+   ============================================================ */
+
+@theme {
+  --color-navy: #1B2A4A;
+  --color-navy-light: #2A3F6A;
+  --color-navy-dark: #111D35;
+  --color-gold: #D4A843;
+  --color-gold-light: #E8C76B;
+  --color-gold-dark: #B8922E;
+  --color-cream: #FAF8F5;
+  --color-cream-dark: #F5F0E8;
+  --color-success: #2D8B55;
+  --color-success-light: #E8F5EE;
+  --color-alert: #E85D4A;
+  --color-alert-light: #FDE8E5;
+  --color-martha-brown: #8B6914;
+  --color-text-primary: #2C3E50;
+  --color-text-secondary: #7F8C8D;
+  --color-text-light: #A0AEC0;
+  --color-white: #FFFFFF;
+  --color-border: #E2E8F0;
+  --color-card: #FFFFFF;
+  --color-overlay: rgba(0, 0, 0, 0.5);
+  --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+  --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
+  --radius-sm: 0.5rem;
+  --radius-md: 0.75rem;
+  --radius-lg: 1rem;
+  --radius-xl: 1.5rem;
+  --radius-full: 9999px;
+  --shadow-sm: 0 1px 3px rgba(27, 42, 74, 0.08);
+  --shadow-md: 0 4px 12px rgba(27, 42, 74, 0.1);
+  --shadow-lg: 0 8px 30px rgba(27, 42, 74, 0.12);
+  --shadow-xl: 0 16px 48px rgba(27, 42, 74, 0.16);
+  --shadow-gold: 0 4px 20px rgba(212, 168, 67, 0.3);
+}
+
+/* ============================================================
+   Base Styles
+   ============================================================ */
+
+* {
+  -webkit-tap-highlight-color: transparent;
+}
+
+html {
+  scroll-behavior: smooth;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+:root {
+  font-family: var(--font-sans);
+  line-height: 1.5;
+  font-weight: 400;
+  color-scheme: light;
+  color: var(--color-text-primary);
+  background-color: var(--color-cream);
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+  min-height: 100dvh;
+  overflow-x: hidden;
+}
+
+/* Number formatting */
+.font-mono {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--color-border); border-radius: 9999px; }
+
+/* PWA Standalone */
+@media (display-mode: standalone) {
+  body {
+    padding-top: env(safe-area-inset-top);
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+}
+
+/* Animations */
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-6px); }
+}
+
+@keyframes pulse-gold {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(212, 168, 67, 0.4); }
+  50% { box-shadow: 0 0 0 12px rgba(212, 168, 67, 0); }
+}
+
+@keyframes slide-up {
+  from { transform: translateY(20px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+.animate-float { animation: float 3s ease-in-out infinite; }
+.animate-pulse-gold { animation: pulse-gold 2s ease-in-out infinite; }
+.animate-slide-up { animation: slide-up 0.4s ease-out forwards; }
+
+/* Martha Chat Bubble */
+.martha-bubble {
+  position: relative;
+  background: var(--color-white);
+  border-radius: var(--radius-lg);
+  border-bottom-left-radius: 4px;
+  box-shadow: var(--shadow-md);
+  padding: 1rem 1.25rem;
+}
+.martha-bubble::before {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: -8px;
+  width: 16px;
+  height: 16px;
+  background: var(--color-white);
+  clip-path: polygon(100% 0, 100% 100%, 0 100%);
+}
+
+/* Bottom Nav Spacer */
+.bottom-nav-spacer {
+  height: calc(80px + env(safe-area-inset-bottom, 0px));
+}
