@@ -21,6 +21,25 @@ const TEXT_LIGHT = [107, 114, 128] as const;
 
 type RGB = readonly [number, number, number];
 
+/** Sanitize text for jsPDF — replace Unicode chars not in WinAnsiEncoding */
+function safe(text: string): string {
+  return text
+    .replace(/\u20AC/g, 'EUR ')   // € -> EUR
+    .replace(/\u2192/g, '->')      // → -> ->
+    .replace(/\u2190/g, '<-')      // ←
+    .replace(/\u2013/g, '-')       // – (en dash)
+    .replace(/\u2014/g, '--')      // — (em dash)
+    .replace(/\u2018/g, "'")       // '
+    .replace(/\u2019/g, "'")       // '
+    .replace(/\u201C/g, '"')       // "
+    .replace(/\u201D/g, '"');      // "
+}
+
+/** PDF-safe currency formatter */
+function pdfAmt(amount: number): string {
+  return safe(fmtAmt(amount));
+}
+
 function setColor(doc: jsPDF, color: RGB) {
   doc.setTextColor(color[0], color[1], color[2]);
 }
@@ -119,13 +138,13 @@ export function generatePDF(data: ReportData): void {
   doc.setFontSize(13);
   doc.setFont('helvetica', 'bold');
   setColor(doc, GREEN);
-  doc.text(fmtAmt(data.totalReceipts), summaryCol1, y + 14);
+  doc.text(pdfAmt(data.totalReceipts), summaryCol1, y + 14);
   setColor(doc, RED);
-  doc.text(fmtAmt(data.totalPayments), summaryCol2, y + 14);
+  doc.text(pdfAmt(data.totalPayments), summaryCol2, y + 14);
 
   const balColor = data.netBalance >= 0 ? GREEN : RED;
   setColor(doc, balColor);
-  doc.text((data.netBalance >= 0 ? '+' : '') + fmtAmt(data.netBalance), summaryCol1, y + 28);
+  doc.text((data.netBalance >= 0 ? '+' : '') + pdfAmt(data.netBalance), summaryCol1, y + 28);
   setColor(doc, NAVY);
   doc.setFontSize(13);
   doc.text(String(data.totalTransactions), summaryCol2, y + 28);
@@ -148,9 +167,9 @@ export function generatePDF(data: ReportData): void {
 
     const rcptGrowth = fmtPct(data.advanced.receiptGrowthVsPrevQ);
     const pmtGrowth = fmtPct(data.advanced.paymentGrowthVsPrevQ);
-    doc.text(`Receipts: ${fmtAmt(data.advanced.prevQReceipts)} → ${fmtAmt(data.totalReceipts)}  (${rcptGrowth})`, 25, y);
+    doc.text(safe(`Receipts: ${fmtAmt(data.advanced.prevQReceipts)} -> ${fmtAmt(data.totalReceipts)}  (${rcptGrowth})`), 25, y);
     y += 5;
-    doc.text(`Payments: ${fmtAmt(data.advanced.prevQPayments)} → ${fmtAmt(data.totalPayments)}  (${pmtGrowth})`, 25, y);
+    doc.text(safe(`Payments: ${fmtAmt(data.advanced.prevQPayments)} -> ${fmtAmt(data.totalPayments)}  (${pmtGrowth})`), 25, y);
     y += 8;
   }
 
@@ -162,10 +181,10 @@ export function generatePDF(data: ReportData): void {
   y += 6;
 
   const metrics = [
-    ['Average Transaction', fmtAmt(data.advanced.avgTransactionSize)],
-    ['Average Receipt', fmtAmt(data.advanced.avgReceiptSize)],
-    ['Average Payment', fmtAmt(data.advanced.avgPaymentSize)],
-    ['Median Transaction', fmtAmt(data.advanced.medianTransaction)],
+    ['Average Transaction', pdfAmt(data.advanced.avgTransactionSize)],
+    ['Average Receipt', pdfAmt(data.advanced.avgReceiptSize)],
+    ['Average Payment', pdfAmt(data.advanced.avgPaymentSize)],
+    ['Median Transaction', pdfAmt(data.advanced.medianTransaction)],
     ['Operating Ratio', `${(data.advanced.operatingRatio * 100).toFixed(1)}%`],
     ['Busiest Month', data.advanced.busyMonth],
     ['Quietest Month', data.advanced.quietMonth],
@@ -204,9 +223,9 @@ export function generatePDF(data: ReportData): void {
     head: [['Month', 'Receipts', 'Payments', 'Net', 'Transactions']],
     body: data.monthlyBreakdown.map((m) => [
       m.month,
-      fmtAmt(m.receipts),
-      fmtAmt(m.payments),
-      (m.net >= 0 ? '+' : '') + fmtAmt(m.net),
+      pdfAmt(m.receipts),
+      pdfAmt(m.payments),
+      (m.net >= 0 ? '+' : '') + pdfAmt(m.net),
       String(m.txnCount),
     ]),
     theme: 'striped',
@@ -237,11 +256,11 @@ export function generatePDF(data: ReportData): void {
       head: [['Category', 'Amount', 'Transactions', '% of Total']],
       body: data.receiptsByCategory.map((c) => [
         c.label,
-        fmtAmt(c.amount),
+        pdfAmt(c.amount),
         String(c.count),
         `${c.percentage.toFixed(1)}%`,
       ]),
-      foot: [['TOTAL', fmtAmt(data.totalReceipts), String(data.receiptCount), '100%']],
+      foot: [['TOTAL', pdfAmt(data.totalReceipts), String(data.receiptCount), '100%']],
       theme: 'striped',
       margin: { left: 20, right: 20 },
       headStyles: { fillColor: [GREEN[0], GREEN[1], GREEN[2]], textColor: [255, 255, 255], fontSize: 9, fontStyle: 'bold' },
@@ -258,7 +277,7 @@ export function generatePDF(data: ReportData): void {
     doc.setFont('helvetica', 'italic');
     setColor(doc, TEXT_LIGHT);
     doc.text(
-      `Largest receipt: ${fmtAmt(data.advanced.largestReceipt.amount)} — ${data.advanced.largestReceipt.description} (${formatDate(data.advanced.largestReceipt.date)})`,
+      safe(`Largest receipt: ${fmtAmt(data.advanced.largestReceipt.amount)} -- ${data.advanced.largestReceipt.description} (${formatDate(data.advanced.largestReceipt.date)})`),
       25, y + 2
     );
     y += 10;
@@ -283,11 +302,11 @@ export function generatePDF(data: ReportData): void {
       head: [['Category', 'Amount', 'Transactions', '% of Total']],
       body: data.paymentsByCategory.map((c) => [
         c.label,
-        fmtAmt(c.amount),
+        pdfAmt(c.amount),
         String(c.count),
         `${c.percentage.toFixed(1)}%`,
       ]),
-      foot: [['TOTAL', fmtAmt(data.totalPayments), String(data.paymentCount), '100%']],
+      foot: [['TOTAL', pdfAmt(data.totalPayments), String(data.paymentCount), '100%']],
       theme: 'striped',
       margin: { left: 20, right: 20 },
       headStyles: { fillColor: [RED[0], RED[1], RED[2]], textColor: [255, 255, 255], fontSize: 9, fontStyle: 'bold' },
@@ -303,7 +322,7 @@ export function generatePDF(data: ReportData): void {
     doc.setFont('helvetica', 'italic');
     setColor(doc, TEXT_LIGHT);
     doc.text(
-      `Largest payment: ${fmtAmt(data.advanced.largestPayment.amount)} — ${data.advanced.largestPayment.description} (${formatDate(data.advanced.largestPayment.date)})`,
+      safe(`Largest payment: ${fmtAmt(data.advanced.largestPayment.amount)} -- ${data.advanced.largestPayment.description} (${formatDate(data.advanced.largestPayment.date)})`),
       25, y + 2
     );
     y += 10;
@@ -328,9 +347,9 @@ export function generatePDF(data: ReportData): void {
       head: [['Circuit', 'Receipts', 'Payments', 'Net', 'Transactions']],
       body: data.circuitBreakdown.map((c) => [
         c.name,
-        fmtAmt(c.receipts),
-        fmtAmt(c.payments),
-        (c.net >= 0 ? '+' : '') + fmtAmt(c.net),
+        pdfAmt(c.receipts),
+        pdfAmt(c.payments),
+        (c.net >= 0 ? '+' : '') + pdfAmt(c.net),
         String(c.txnCount),
       ]),
       theme: 'striped',
@@ -365,7 +384,7 @@ export function generatePDF(data: ReportData): void {
         t.description,
         data.receiptsByCategory.find((c) => c.category === t.category)?.label || t.category,
         '',  // circuit column placeholder
-        fmtAmt(t.amount),
+        pdfAmt(t.amount),
       ]),
       theme: 'striped',
       margin: { left: 20, right: 20 },
@@ -395,7 +414,7 @@ export function generatePDF(data: ReportData): void {
         formatDate(t.date),
         t.description,
         data.paymentsByCategory.find((c) => c.category === t.category)?.label || t.category,
-        fmtAmt(t.amount),
+        pdfAmt(t.amount),
       ]),
       theme: 'striped',
       margin: { left: 20, right: 20 },
