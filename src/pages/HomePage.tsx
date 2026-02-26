@@ -4,7 +4,7 @@
 
 import { useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import {
   ArrowUpRight,
   ArrowDownRight,
@@ -16,6 +16,10 @@ import {
   Users,
   FileText,
   Receipt,
+  Download,
+  X,
+  Share,
+  Smartphone,
 } from 'lucide-react';
 import MarthaAssistant from '../components/martha/MarthaAssistant';
 import SummaryCard from '../components/ui/SummaryCard';
@@ -26,6 +30,7 @@ import { useInventoryStore } from '../store/useInventoryStore';
 import { useMarthaStore } from '../store/useMarthaStore';
 import { formatCurrency, getCurrentQuarter, getCurrentYear } from '../utils/helpers';
 import { QUARTER_LABELS } from '../utils/constants';
+import { useInstallPrompt } from '../hooks/useInstallPrompt';
 
 export default function HomePage() {
   const navigate = useNavigate();
@@ -35,6 +40,7 @@ export default function HomePage() {
   const { speak } = useMarthaStore();
 
   const loading = txnLoading || circuitLoading || invLoading;
+  const { showBanner, showIOSGuide, install, dismiss } = useInstallPrompt();
 
   const currentQ = getCurrentQuarter();
   const currentY = getCurrentYear();
@@ -119,6 +125,76 @@ export default function HomePage() {
       <div className="mb-6">
         <MarthaAssistant size="sm" layout="horizontal" />
       </div>
+
+      {/* PWA Install Banner */}
+      <AnimatePresence>
+        {showBanner && (
+          <motion.div
+            initial={{ opacity: 0, height: 0, marginBottom: 0 }}
+            animate={{ opacity: 1, height: 'auto', marginBottom: 16 }}
+            exit={{ opacity: 0, height: 0, marginBottom: 0 }}
+            className="overflow-hidden"
+          >
+            <div className="relative bg-gradient-to-r from-navy to-navy-light rounded-2xl p-4 text-white shadow-lg">
+              <button
+                onClick={dismiss}
+                className="absolute top-2 right-2 w-6 h-6 rounded-full bg-white/10 flex items-center justify-center hover:bg-white/20 transition-colors"
+                aria-label="Dismiss"
+              >
+                <X size={12} />
+              </button>
+              <div className="flex items-center gap-3">
+                <div className="w-12 h-12 rounded-xl bg-gold/20 flex items-center justify-center flex-shrink-0">
+                  <Download size={22} className="text-gold" />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-bold">Install Martha</p>
+                  <p className="text-[10px] text-white/70 leading-relaxed">
+                    Add to your home screen for quick access, offline use & app-like experience
+                  </p>
+                </div>
+              </div>
+              <button
+                onClick={install}
+                className="mt-3 w-full py-2.5 bg-gold text-navy font-bold text-xs rounded-xl hover:bg-gold-light transition-colors flex items-center justify-center gap-2"
+              >
+                <Smartphone size={14} />
+                Install App
+              </button>
+            </div>
+          </motion.div>
+        )}
+
+        {showIOSGuide && (
+          <motion.div
+            initial={{ opacity: 0, height: 0, marginBottom: 0 }}
+            animate={{ opacity: 1, height: 'auto', marginBottom: 16 }}
+            exit={{ opacity: 0, height: 0, marginBottom: 0 }}
+            className="overflow-hidden"
+          >
+            <div className="relative bg-gradient-to-r from-navy to-navy-light rounded-2xl p-4 text-white shadow-lg">
+              <button
+                onClick={dismiss}
+                className="absolute top-2 right-2 w-6 h-6 rounded-full bg-white/10 flex items-center justify-center hover:bg-white/20 transition-colors"
+                aria-label="Dismiss"
+              >
+                <X size={12} />
+              </button>
+              <div className="flex items-center gap-3">
+                <div className="w-12 h-12 rounded-xl bg-gold/20 flex items-center justify-center flex-shrink-0">
+                  <Download size={22} className="text-gold" />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-bold">Install Martha</p>
+                  <p className="text-[10px] text-white/70 leading-relaxed">
+                    Tap <Share size={10} className="inline text-gold" /> in your browser, then <strong>"Add to Home Screen"</strong>
+                  </p>
+                </div>
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* Loading Indicator */}
       {loading && (

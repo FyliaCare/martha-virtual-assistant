@@ -11,6 +11,8 @@ import {
   Info,
   HelpCircle,
   Heart,
+  Smartphone,
+  CheckCircle2,
 } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 import Card from '../components/ui/Card';
@@ -24,6 +26,7 @@ import { useInventoryStore } from '../store/useInventoryStore';
 import { db } from '../db/database';
 import { seedDatabase } from '../db/seed';
 import { APP_NAME, ORGANIZATION_NAME } from '../utils/constants';
+import { useInstallPrompt } from '../hooks/useInstallPrompt';
 
 export default function SettingsPage() {
   const { speak } = useMarthaStore();
@@ -35,6 +38,7 @@ export default function SettingsPage() {
   const [showAbout, setShowAbout] = useState(false);
   const [isExporting, setIsExporting] = useState(false);
   const [isImporting, setIsImporting] = useState(false);
+  const { canInstall, isInstalled, install } = useInstallPrompt();
 
   // ---- Export all data as JSON ----
   const handleExport = async () => {
@@ -179,6 +183,28 @@ export default function SettingsPage() {
           description: 'Delete everything and start fresh',
           action: () => setShowDeleteConfirm(true),
           danger: true,
+        },
+      ],
+    },
+    {
+      title: 'App',
+      items: [
+        {
+          icon: isInstalled ? CheckCircle2 : Smartphone,
+          label: isInstalled ? 'App Installed' : 'Install App',
+          description: isInstalled
+            ? 'Martha is installed on your device'
+            : 'Add Martha to your home screen',
+          action: async () => {
+            if (canInstall) {
+              const ok = await install();
+              if (ok) speak('Martha has been installed! You can now launch her from your home screen.', 'celebrating');
+            } else if (isInstalled) {
+              speak('Martha is already installed on your device! Look for her on your home screen.', 'thumbsup');
+            } else {
+              speak('To install Martha, open this page in Chrome or Edge and tap the install button in the address bar.', 'presenting');
+            }
+          },
         },
       ],
     },
