@@ -3,7 +3,6 @@
 // ============================================================
 
 import { useState } from 'react';
-import type { ComponentType } from 'react';
 import { motion } from 'framer-motion';
 import {
   Download,
@@ -13,6 +12,7 @@ import {
   HelpCircle,
   Heart,
 } from 'lucide-react';
+import type { LucideIcon } from 'lucide-react';
 import Card from '../components/ui/Card';
 import Button from '../components/ui/Button';
 import Modal from '../components/ui/Modal';
@@ -147,7 +147,7 @@ export default function SettingsPage() {
   };
 
   interface SettingItem {
-    icon: ComponentType<Record<string, unknown>>;
+    icon: LucideIcon;
     label: string;
     description: string;
     action: () => void;

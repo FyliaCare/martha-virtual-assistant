@@ -37,9 +37,11 @@ import type { Quarter } from '../types';
 const PIE_COLORS = ['#1B2A4A', '#D4A843', '#2D8B55', '#E85D4A', '#6366F1', '#EC4899', '#F59E0B', '#14B8A6', '#8B5CF6', '#EF4444'];
 
 export default function ReportsPage() {
-  const { transactions, loadAll } = useTransactionStore();
-  const { circuits, loadCircuits } = useCircuitStore();
+  const { transactions, loading: txnLoading, loadAll } = useTransactionStore();
+  const { circuits, loading: circuitLoading, loadCircuits } = useCircuitStore();
   const { speak } = useMarthaStore();
+
+  const loading = txnLoading || circuitLoading;
 
   const [selectedQuarter, setSelectedQuarter] = useState<Quarter>(getCurrentQuarter());
   const [selectedYear, setSelectedYear] = useState(getCurrentYear());
@@ -49,6 +51,7 @@ export default function ReportsPage() {
     loadAll();
     loadCircuits();
     speak("Here are your financial analytics. Use the filters to explore different quarters.", 'presenting');
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const filteredTxns = useMemo(
@@ -190,6 +193,13 @@ export default function ReportsPage() {
         <MarthaAssistant size="sm" layout="horizontal" />
       </div>
 
+      {/* Loading Indicator */}
+      {loading && (
+        <div className="flex items-center justify-center py-4">
+          <div className="w-5 h-5 border-2 border-navy/20 border-t-navy rounded-full animate-spin" />
+        </div>
+      )}
+
       {/* Quarter/Year Filter */}
       <Card className="p-3 mb-4">
         <div className="flex items-center gap-2">
@@ -277,7 +287,7 @@ export default function ReportsPage() {
                       <XAxis dataKey="month" tick={{ fontSize: 11, fill: '#6B7280' }} axisLine={false} tickLine={false} />
                       <YAxis tick={{ fontSize: 10, fill: '#6B7280' }} axisLine={false} tickLine={false} tickFormatter={(v) => formatCurrencyShort(v)} />
                       <Tooltip
-                        formatter={(value: number | undefined) => formatCurrency(value ?? 0)}
+                        formatter={(value: string | number | undefined) => formatCurrency(Number(value) || 0)}
                         contentStyle={{ borderRadius: 12, fontSize: 12, border: '1px solid #E5E7EB' }}
                       />
                       <Bar dataKey="receipts" name="Receipts" fill="#2D8B55" radius={[4, 4, 0, 0]} />
@@ -331,7 +341,7 @@ export default function ReportsPage() {
                             <Cell key={i} fill={PIE_COLORS[i % PIE_COLORS.length]} />
                           ))}
                         </Pie>
-                        <Tooltip formatter={(value: number | undefined) => formatCurrency(value ?? 0)} />
+                        <Tooltip formatter={(value: string | number | undefined) => formatCurrency(Number(value) || 0)} />
                       </RPieChart>
                     </ResponsiveContainer>
                   </div>
@@ -384,7 +394,7 @@ export default function ReportsPage() {
                             <Cell key={i} fill={PIE_COLORS[i % PIE_COLORS.length]} />
                           ))}
                         </Pie>
-                        <Tooltip formatter={(value: number | undefined) => formatCurrency(value ?? 0)} />
+                        <Tooltip formatter={(value: string | number | undefined) => formatCurrency(Number(value) || 0)} />
                       </RPieChart>
                     </ResponsiveContainer>
                   </div>

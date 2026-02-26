@@ -29,10 +29,12 @@ import { QUARTER_LABELS } from '../utils/constants';
 
 export default function HomePage() {
   const navigate = useNavigate();
-  const { transactions, loadAll, getTotalReceipts, getTotalPayments, getBalance } = useTransactionStore();
-  const { circuits, loadCircuits } = useCircuitStore();
-  const { products, loadProducts } = useInventoryStore();
+  const { transactions, loading: txnLoading, loadAll, getTotalReceipts, getTotalPayments, getBalance } = useTransactionStore();
+  const { circuits, loading: circuitLoading, loadCircuits } = useCircuitStore();
+  const { products, loading: invLoading, loadProducts } = useInventoryStore();
   const { speak } = useMarthaStore();
+
+  const loading = txnLoading || circuitLoading || invLoading;
 
   const currentQ = getCurrentQuarter();
   const currentY = getCurrentYear();
@@ -54,12 +56,15 @@ export default function HomePage() {
       `${greeting} Welcome back. Here's your Europe Mission financial overview for ${QUARTER_LABELS[currentQ]} ${currentY}.`,
       'greeting'
     );
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const totalReceipts = getTotalReceipts(currentQ, currentY);
   const totalPayments = getTotalPayments(currentQ, currentY);
   const balance = getBalance(currentQ, currentY);
-  const recentTransactions = transactions.slice(0, 5);
+  const recentTransactions = transactions
+    .filter((t) => t.quarter === currentQ && t.year === currentY)
+    .slice(0, 5);
 
   const quickActions = [
     { label: 'New Entry', icon: PenLine, path: '/entry', color: 'bg-gold text-navy-dark' },
@@ -96,6 +101,13 @@ export default function HomePage() {
       <div className="mb-6">
         <MarthaAssistant size="sm" layout="horizontal" />
       </div>
+
+      {/* Loading Indicator */}
+      {loading && (
+        <div className="flex items-center justify-center py-4">
+          <div className="w-5 h-5 border-2 border-navy/20 border-t-navy rounded-full animate-spin" />
+        </div>
+      )}
 
       {/* Summary Cards Grid */}
       <div className="grid grid-cols-2 gap-3 mb-6">
@@ -155,7 +167,7 @@ export default function HomePage() {
       {/* Recent Transactions */}
       <div className="mb-6">
         <div className="flex items-center justify-between mb-3">
-          <h2 className="text-sm font-bold text-navy">Recent Transactions</h2>
+          <h2 className="text-sm font-bold text-navy">Recent ({QUARTER_LABELS[currentQ]})</h2>
           {transactions.length > 0 && (
             <button
               onClick={() => navigate('/reports')}

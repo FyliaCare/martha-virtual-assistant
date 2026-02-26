@@ -25,9 +25,11 @@ import { formatCurrency } from '../utils/helpers';
 import type { Circuit } from '../types';
 
 export default function CircuitsPage() {
-  const { circuits, loadCircuits, addCircuit, updateCircuit } = useCircuitStore();
-  const { transactions, loadAll } = useTransactionStore();
+  const { circuits, loading: circuitLoading, loadCircuits, addCircuit, updateCircuit } = useCircuitStore();
+  const { transactions, loading: txnLoading, loadAll } = useTransactionStore();
   const { speak } = useMarthaStore();
+
+  const loading = circuitLoading || txnLoading;
 
   const [showAddModal, setShowAddModal] = useState(false);
   const [editingCircuit, setEditingCircuit] = useState<Circuit | null>(null);
@@ -43,6 +45,7 @@ export default function CircuitsPage() {
     loadCircuits();
     loadAll();
     speak("Here are all your circuits. Tap on any to see their financial overview.", 'presenting');
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const resetForm = () => {
@@ -137,6 +140,13 @@ export default function CircuitsPage() {
       <div className="mb-6">
         <MarthaAssistant size="sm" layout="horizontal" />
       </div>
+
+      {/* Loading Indicator */}
+      {loading && (
+        <div className="flex items-center justify-center py-4">
+          <div className="w-5 h-5 border-2 border-navy/20 border-t-navy rounded-full animate-spin" />
+        </div>
+      )}
 
       {/* Circuit List */}
       {circuits.length === 0 ? (

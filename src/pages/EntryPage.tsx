@@ -84,6 +84,7 @@ export default function EntryPage() {
     }
 
     speak("Let's record a new transaction. First, is this a receipt or a payment?", 'clipboard');
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const categories = txnType === 'receipt' ? RECEIPT_CATEGORIES : PAYMENT_CATEGORIES;
@@ -467,10 +468,8 @@ export default function EntryPage() {
                   label="Circuit (optional)"
                   value={circuitId}
                   onChange={(e) => setCircuitId(e.target.value)}
-                  options={[
-                    { value: '', label: 'No circuit' },
-                    ...circuits.map((c) => ({ value: c.uid, label: c.name })),
-                  ]}
+                  placeholder="No circuit"
+                  options={circuits.map((c) => ({ value: c.uid, label: c.name }))}
                 />
 
                 {/* Merchandise Items */}
