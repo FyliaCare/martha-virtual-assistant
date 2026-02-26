@@ -325,8 +325,8 @@ export default function SettingsPage() {
       {/* About Modal */}
       <Modal isOpen={showAbout} onClose={() => setShowAbout(false)} title="About Martha">
         <div className="text-center space-y-4 py-2">
-          <div className="w-16 h-16 bg-navy rounded-2xl mx-auto flex items-center justify-center">
-            <span className="text-2xl font-bold text-gold">M</span>
+          <div className="w-16 h-16 rounded-2xl mx-auto overflow-hidden shadow-lg">
+            <img src="/icons/icon-192.png" alt="Martha" className="w-full h-full" />
           </div>
           <div>
             <h3 className="text-lg font-bold text-navy">{APP_NAME}</h3>

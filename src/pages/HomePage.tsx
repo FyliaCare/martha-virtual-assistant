@@ -108,9 +108,14 @@ export default function HomePage() {
           animate={{ opacity: 1, y: 0 }}
           className="flex items-center justify-between"
         >
-          <div>
-            <h1 className="text-xl font-bold text-navy">Martha</h1>
-            <p className="text-xs text-text-secondary">Europe Mission Finance</p>
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-xl overflow-hidden shadow-md">
+              <img src="/icons/icon-96.png" alt="Martha" className="w-full h-full" />
+            </div>
+            <div>
+              <h1 className="text-xl font-bold text-navy">Martha</h1>
+              <p className="text-xs text-text-secondary">Europe Mission Finance</p>
+            </div>
           </div>
           <div className="text-right">
             <p className="text-[10px] text-text-secondary uppercase tracking-wider font-semibold">
