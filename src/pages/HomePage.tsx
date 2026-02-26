@@ -2,7 +2,7 @@
 // Home Page — Dashboard with Martha greeting
 // ============================================================
 
-import { useEffect } from 'react';
+import { useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import {
@@ -39,6 +39,24 @@ export default function HomePage() {
   const currentQ = getCurrentQuarter();
   const currentY = getCurrentYear();
 
+  // If the current quarter has no data, fall back to the most recent quarter that does
+  const { displayQ, displayY } = useMemo(() => {
+    const hasCurrentData = transactions.some(
+      (t) => t.quarter === currentQ && t.year === currentY
+    );
+    if (hasCurrentData || transactions.length === 0) {
+      return { displayQ: currentQ, displayY: currentY };
+    }
+    // Find the most recent quarter with data
+    const sorted = [...transactions].sort((a, b) => {
+      if (a.year !== b.year) return b.year - a.year;
+      return b.quarter - a.quarter;
+    });
+    return { displayQ: sorted[0].quarter, displayY: sorted[0].year };
+  }, [transactions, currentQ, currentY]);
+
+  const isHistorical = displayQ !== currentQ || displayY !== currentY;
+
   useEffect(() => {
     loadAll();
     loadCircuits();
@@ -59,11 +77,11 @@ export default function HomePage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const totalReceipts = getTotalReceipts(currentQ, currentY);
-  const totalPayments = getTotalPayments(currentQ, currentY);
-  const balance = getBalance(currentQ, currentY);
+  const totalReceipts = getTotalReceipts(displayQ, displayY);
+  const totalPayments = getTotalPayments(displayQ, displayY);
+  const balance = getBalance(displayQ, displayY);
   const recentTransactions = transactions
-    .filter((t) => t.quarter === currentQ && t.year === currentY)
+    .filter((t) => t.quarter === displayQ && t.year === displayY)
     .slice(0, 5);
 
   const quickActions = [
@@ -90,9 +108,9 @@ export default function HomePage() {
           </div>
           <div className="text-right">
             <p className="text-[10px] text-text-secondary uppercase tracking-wider font-semibold">
-              {QUARTER_LABELS[currentQ]}
+              {QUARTER_LABELS[displayQ]}
             </p>
-            <p className="text-xs text-text-secondary">{currentY}</p>
+            <p className="text-xs text-text-secondary">{displayY}</p>
           </div>
         </motion.div>
       </div>
@@ -106,6 +124,15 @@ export default function HomePage() {
       {loading && (
         <div className="flex items-center justify-center py-4">
           <div className="w-5 h-5 border-2 border-navy/20 border-t-navy rounded-full animate-spin" />
+        </div>
+      )}
+
+      {/* Historical Data Notice */}
+      {isHistorical && (
+        <div className="mb-4 p-3 bg-gold/10 border border-gold/30 rounded-xl text-center">
+          <p className="text-xs text-gold-dark font-medium">
+            Showing data from {QUARTER_LABELS[displayQ]} {displayY} — no transactions yet for {QUARTER_LABELS[currentQ]} {currentY}
+          </p>
         </div>
       )}
 
@@ -134,7 +161,7 @@ export default function HomePage() {
         />
         <SummaryCard
           label="Transactions"
-          value={String(transactions.filter((t) => t.quarter === currentQ && t.year === currentY).length)}
+          value={String(transactions.filter((t) => t.quarter === displayQ && t.year === displayY).length)}
           icon={<TrendingUp size={18} />}
           color="navy"
           delay={0.25}
@@ -167,7 +194,7 @@ export default function HomePage() {
       {/* Recent Transactions */}
       <div className="mb-6">
         <div className="flex items-center justify-between mb-3">
-          <h2 className="text-sm font-bold text-navy">Recent ({QUARTER_LABELS[currentQ]})</h2>
+          <h2 className="text-sm font-bold text-navy">Recent ({QUARTER_LABELS[displayQ]})</h2>
           {transactions.length > 0 && (
             <button
               onClick={() => navigate('/reports')}
