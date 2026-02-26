@@ -63,7 +63,7 @@ export default function CircuitsPage() {
   };
 
   const handleSave = async () => {
-    if (!formName.trim()) return;
+    if (!formName.trim() || !formCountry.trim()) return;
 
     const subBranches = formSubBranches
       .split(',')

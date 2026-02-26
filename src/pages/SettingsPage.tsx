@@ -48,6 +48,7 @@ export default function SettingsPage() {
         products: await db.products.toArray(),
         stockMovements: await db.stockMovements.toArray(),
         events: await db.events.toArray(),
+        documents: await db.documents.toArray(),
       };
 
       const json = JSON.stringify(data, null, 2);
@@ -93,12 +94,14 @@ export default function SettingsPage() {
         await db.products.clear();
         await db.stockMovements.clear();
         await db.events.clear();
+        await db.documents.clear();
 
         if (data.transactions?.length) await db.transactions.bulkAdd(data.transactions);
         if (data.circuits?.length) await db.circuits.bulkAdd(data.circuits);
         if (data.products?.length) await db.products.bulkAdd(data.products);
         if (data.stockMovements?.length) await db.stockMovements.bulkAdd(data.stockMovements);
         if (data.events?.length) await db.events.bulkAdd(data.events);
+        if (data.documents?.length) await db.documents.bulkAdd(data.documents);
 
         // Reload stores
         await loadAll();

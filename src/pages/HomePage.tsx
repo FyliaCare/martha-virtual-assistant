@@ -66,7 +66,7 @@ export default function HomePage() {
     { label: 'Reports', icon: BarChart3, path: '/reports', color: 'bg-navy text-white' },
     { label: 'Stock', icon: Package, path: '/inventory', color: 'bg-success text-white' },
     { label: 'Circuits', icon: Users, path: '/circuits', color: 'bg-navy-light text-white' },
-    { label: 'Invoice', icon: FileText, path: '/entry?type=invoice', color: 'bg-gold-dark text-white' },
+    { label: 'Payment', icon: FileText, path: '/entry?type=payment', color: 'bg-gold-dark text-white' },
     { label: 'Receipt', icon: Receipt, path: '/entry?type=receipt', color: 'bg-martha-brown text-white' },
   ];
 

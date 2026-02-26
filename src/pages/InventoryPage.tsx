@@ -54,18 +54,20 @@ export default function InventoryPage() {
   const [smNotes, setSmNotes] = useState('');
 
   useEffect(() => {
-    loadProducts();
-    loadMovements();
-
-    const lowStock = getLowStockProducts();
-    if (lowStock.length > 0) {
-      speak(
-        `Heads up! ${lowStock.length} product${lowStock.length > 1 ? 's are' : ' is'} running low on stock.`,
-        'warning'
-      );
-    } else {
-      speak("Here's your inventory overview. All stock levels look healthy!", 'presenting');
-    }
+    (async () => {
+      await loadProducts();
+      await loadMovements();
+      const lowStock = getLowStockProducts();
+      if (lowStock.length > 0) {
+        speak(
+          `Heads up! ${lowStock.length} product${lowStock.length > 1 ? 's are' : ' is'} running low on stock.`,
+          'warning'
+        );
+      } else {
+        speak("Here's your inventory overview. All stock levels look healthy!", 'presenting');
+      }
+    })();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const lowStockProducts = getLowStockProducts();
@@ -144,6 +146,12 @@ export default function InventoryPage() {
     const qty = parseInt(smQty) || 0;
     const price = parseFloat(smPrice) || 0;
     if (qty <= 0) return;
+
+    // Prevent selling more than available stock
+    if (smType === 'sale' && product && qty > product.currentStock) {
+      speak(`Only ${product.currentStock} units of ${product.name} available in stock.`, 'warning');
+      return;
+    }
 
     await addStockMovement({
       productId: smProductId,

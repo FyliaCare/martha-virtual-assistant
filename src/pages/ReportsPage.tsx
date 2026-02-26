@@ -56,8 +56,8 @@ export default function ReportsPage() {
     [transactions, selectedQuarter, selectedYear]
   );
 
-  const receipts = filteredTxns.filter((t) => t.type === 'receipt');
-  const payments = filteredTxns.filter((t) => t.type === 'payment');
+  const receipts = useMemo(() => filteredTxns.filter((t) => t.type === 'receipt'), [filteredTxns]);
+  const payments = useMemo(() => filteredTxns.filter((t) => t.type === 'payment'), [filteredTxns]);
   const totalReceipts = receipts.reduce((s, t) => s + t.amount, 0);
   const totalPayments = payments.reduce((s, t) => s + t.amount, 0);
   const balance = totalReceipts - totalPayments;

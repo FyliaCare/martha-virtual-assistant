@@ -80,6 +80,7 @@ export default function EntryPage() {
     const presetType = searchParams.get('type');
     if (presetType === 'receipt' || presetType === 'payment') {
       setTxnType(presetType);
+      setCategory(''); // reset category when type is pre-set
     }
 
     speak("Let's record a new transaction. First, is this a receipt or a payment?", 'clipboard');
@@ -115,7 +116,10 @@ export default function EntryPage() {
 
     if (step === 'details') {
       if (!description.trim()) newErrors.description = 'Please enter a description';
-      if (!amount || parseFloat(amount) <= 0) newErrors.amount = 'Please enter a valid amount';
+      if (!amount || parseFloat(amount) <= 0) {
+        const isMerchandise = category === 'merchandise_sale' || category === 'merchandise_purchase';
+        newErrors.amount = isMerchandise ? 'Add at least one item first' : 'Please enter a valid amount';
+      }
       if (!date) newErrors.date = 'Please select a date';
     }
 
@@ -179,12 +183,10 @@ export default function EntryPage() {
   };
 
   const removeItem = (idx: number) => {
-    setItems((prev) => {
-      const next = prev.filter((_, i) => i !== idx);
-      const newTotal = next.reduce((sum, it) => sum + it.total, 0);
-      setAmount(newTotal > 0 ? newTotal.toFixed(2) : '');
-      return next;
-    });
+    const next = items.filter((_, i) => i !== idx);
+    setItems(next);
+    const newTotal = next.reduce((sum, it) => sum + it.total, 0);
+    setAmount(newTotal > 0 ? newTotal.toFixed(2) : '');
   };
 
   // ---- Submit ----
@@ -300,7 +302,7 @@ export default function EntryPage() {
                 <div className="grid grid-cols-2 gap-3">
                   <motion.button
                     whileTap={{ scale: 0.96 }}
-                    onClick={() => setTxnType('receipt')}
+                    onClick={() => { setTxnType('receipt'); setCategory(''); }}
                     className={`relative p-5 rounded-2xl border-2 transition-all ${
                       txnType === 'receipt'
                         ? 'border-success bg-success/5'
@@ -334,7 +336,7 @@ export default function EntryPage() {
 
                   <motion.button
                     whileTap={{ scale: 0.96 }}
-                    onClick={() => setTxnType('payment')}
+                    onClick={() => { setTxnType('payment'); setCategory(''); }}
                     className={`relative p-5 rounded-2xl border-2 transition-all ${
                       txnType === 'payment'
                         ? 'border-alert bg-alert/5'
