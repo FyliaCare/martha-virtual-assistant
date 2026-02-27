@@ -57,6 +57,7 @@ export const DEFAULT_PRODUCTS = [
   { name: 'Handbook', costPrice: 2.50, sellingPrice: 4.00, category: 'publication' as const, reorderLevel: 20 },
   { name: 'Lacoste T-Shirt', costPrice: 5.00, sellingPrice: 8.00, category: 'clothing' as const, reorderLevel: 10 },
   { name: 'Dues Card', costPrice: 0.30, sellingPrice: 2.00, category: 'accessory' as const, reorderLevel: 20 },
+  { name: 'Scarf', costPrice: 3.60, sellingPrice: 6.00, category: 'accessory' as const, reorderLevel: 10 },
 ];
 
 // ---- Quarter Labels ----

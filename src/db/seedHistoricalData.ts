@@ -333,6 +333,86 @@ export async function seedHistoricalData() {
   ];
 
   // ==================================================================
+  // QUARTER 1 — JANUARY TO MARCH 2025
+  // ==================================================================
+  const q1_2025: Omit<Transaction, 'id'>[] = [
+    // ---- RECEIPTS ----
+    txn('2025-01-08', 'receipt', 'debt_repayment', 'Italy Circuit – Payment of items bought', 530.00, 1, 2025, cid('Italy')),
+    txn('2025-03-11', 'receipt', 'circuit_contribution', 'Payment by Belgium Circuit', 134.00, 1, 2025, cid('Belgium')),
+
+    // ---- PAYMENTS ----
+    txn('2025-01-18', 'payment', 'other', 'Cash deposit to bank', 200.00, 1, 2025, undefined, 'Cash transferred to bank account'),
+    txn('2025-02-03', 'payment', 'other', 'Cash deposit to bank', 200.00, 1, 2025, undefined, 'Cash transferred to bank account'),
+    txn('2025-03-03', 'payment', 'other', 'Cash Deposit to Bank', 3500.00, 1, 2025, undefined, 'Cash transferred to bank account'),
+    txn('2025-03-03', 'payment', 'postage', 'T&T to Italy – Package postage', 20.41, 1, 2025, cid('Italy'), 'Transport & postage for Italy package'),
+  ];
+
+  // ==================================================================
+  // QUARTER 2 — APRIL TO JUNE 2025
+  // ==================================================================
+  const q2_2025: Omit<Transaction, 'id'>[] = [
+    // ---- RECEIPTS ----
+    txn('2025-04-11', 'receipt', 'circuit_contribution', 'Payment by Finland Circuit', 20.00, 2, 2025, cid('Finland')),
+    txn('2025-04-17', 'receipt', 'circuit_contribution', 'Payment by Belgium', 700.00, 2, 2025, cid('Belgium')),
+    txn('2025-05-24', 'receipt', 'circuit_contribution', 'Payment by Italy Circuit', 500.00, 2, 2025, cid('Italy')),
+    txn('2025-05-24', 'receipt', 'circuit_contribution', 'Dusseldorf Circuit Payment', 600.00, 2, 2025, cid('Dusseldorf')),
+    txn('2025-06-24', 'receipt', 'circuit_contribution', 'Holland Circuit Payment', 320.00, 2, 2025, cid('Holland')),
+
+    // ---- PAYMENTS ----
+    txn('2025-04-17', 'payment', 'other', 'Cash Deposit to Bank', 5000.00, 2, 2025, undefined, 'Cash transferred to bank account'),
+    txn('2025-04-23', 'payment', 'merchandise_purchase', 'Payment of Europe Cloth', 5000.00, 2, 2025, undefined, 'Europe Mission Cloth – major purchase payment'),
+    txn('2025-06-15', 'payment', 'gift', 'Gift for Presiding', 60.00, 2, 2025),
+  ];
+
+  // ==================================================================
+  // QUARTER 3 — JULY TO SEPTEMBER 2025
+  // ==================================================================
+  const q3_2025: Omit<Transaction, 'id'>[] = [
+    // ---- RECEIPTS ----
+    txn('2025-07-25', 'receipt', 'circuit_contribution', 'Italy Circuit Payment', 300.00, 3, 2025, cid('Italy')),
+    txn('2025-07-31', 'receipt', 'circuit_contribution', 'Belgium Circuit Payment', 162.00, 3, 2025, cid('Belgium')),
+    txn('2025-08-01', 'receipt', 'merchandise_sale', 'Henry Retail Centre – Cash Sales', 220.00, 3, 2025, undefined, 'Sales at Henry Retail Centre'),
+    txn('2025-08-15', 'receipt', 'circuit_contribution', 'Holland Circuit Payment', 200.00, 3, 2025, cid('Holland')),
+    txn('2025-08-16', 'receipt', 'circuit_contribution', 'Holland Circuit Payment (2nd)', 650.00, 3, 2025, cid('Holland')),
+    txn('2025-09-21', 'receipt', 'debt_repayment', 'Final Payment from UK – Jacket', 241.64, 3, 2025, cid('UK')),
+
+    // ---- PAYMENTS ----
+    txn('2025-08-13', 'payment', 'event_expense', 'Conference extra contribution', 138.00, 3, 2025, undefined, 'Additional conference expenses'),
+    txn('2025-09-20', 'payment', 'merchandise_purchase', 'Europe Mission Cloth', 1000.00, 3, 2025, undefined, 'Additional cloth purchase for Europe Mission'),
+    txn('2025-09-20', 'payment', 'donation_given', 'Retreale Cape Coast', 200.00, 3, 2025, undefined, 'Cape Coast retreat contribution'),
+    txn('2025-09-25', 'payment', 'merchandise_purchase', 'Berlin seebranch – Jackets bought 11pcs & others', 383.00, 3, 2025, undefined, '11 jackets and other items for Berlin sub-branch'),
+    txn('2025-09-30', 'payment', 'gift', 'Gift for Belgium Rev. Gymah', 30.00, 3, 2025, cid('Belgium')),
+  ];
+
+  // ==================================================================
+  // QUARTER 4 — OCTOBER TO DECEMBER 2025
+  // ==================================================================
+  const q4_2025: Omit<Transaction, 'id'>[] = [
+    // ---- RECEIPTS ----
+    txn('2025-10-14', 'receipt', 'circuit_contribution', 'Payment by Belgium Circuit', 390.00, 4, 2025, cid('Belgium')),
+    txn('2025-10-15', 'receipt', 'circuit_contribution', 'Payment by Holland Circuit', 1000.00, 4, 2025, cid('Holland')),
+    txn('2025-10-15', 'receipt', 'circuit_contribution', 'Payment by Holland Circuit (2nd)', 157.00, 4, 2025, cid('Holland')),
+    txn('2025-10-16', 'receipt', 'circuit_contribution', 'Belgium Circuit Payment', 1116.00, 4, 2025, cid('Belgium')),
+    txn('2025-10-23', 'receipt', 'circuit_contribution', 'Finland Circuit Payment', 280.00, 4, 2025, cid('Finland')),
+    txn('2025-10-24', 'receipt', 'circuit_contribution', 'Finland Circuit Payment (2nd)', 67.00, 4, 2025, cid('Finland')),
+    txn('2025-10-25', 'receipt', 'circuit_contribution', 'Stuttgart Circuit Payment', 1000.00, 4, 2025, cid('Stuttgart')),
+    txn('2025-10-27', 'receipt', 'circuit_contribution', 'Belgium Circuit Payment (3rd)', 200.00, 4, 2025, cid('Belgium')),
+    txn('2025-11-23', 'receipt', 'circuit_contribution', 'Belgium Circuit Payout', 500.00, 4, 2025, cid('Belgium')),
+    txn('2025-12-30', 'receipt', 'circuit_contribution', 'Finland Circuit Payment', 135.00, 4, 2025, cid('Finland')),
+
+    // ---- PAYMENTS ----
+    txn('2025-10-04', 'payment', 'postage', 'Holland T&T Package postage', 31.49, 4, 2025, cid('Holland'), 'Transport & postage for Holland package'),
+    txn('2025-10-13', 'payment', 'other', 'Payment to Bank', 1400.00, 4, 2025, undefined, 'Cash transferred to bank account'),
+    txn('2025-10-16', 'payment', 'merchandise_purchase', 'Tree of Life 16pcs + T-shirt 40pcs purchase', 192.00, 4, 2025, undefined, 'Tree of Life 16pcs @12/pc. T-shirt 40pcs included in batch.'),
+    txn('2025-11-25', 'payment', 'merchandise_purchase', 'Handbooks purchase from Ghana', 812.00, 4, 2025, undefined, 'Large handbook order'),
+    txn('2025-12-06', 'payment', 'merchandise_purchase', 'Officers Badges purchase', 980.00, 4, 2025, undefined, 'Bulk officer badge order from Ghana'),
+    txn('2025-12-08', 'payment', 'transportation', 'Extra Bag from Ghana – transportation', 140.00, 4, 2025, undefined, 'Shipping cost for extra bag from Ghana'),
+    txn('2025-12-12', 'payment', 'merchandise_purchase', 'Lacoste T-Shirt 9pcs, Enrolment Badge 100pcs, Headgear 15pcs, Enrolment Service BK', 13.60, 4, 2025, undefined,
+      'Combined purchase batch: Lacoste T-Shirt 9pcs, Enrolment Badge 100pcs, Headgear 15pcs, Enrolment Service Book'),
+    txn('2025-12-21', 'payment', 'merchandise_purchase', 'Scarf 50pcs, Cap Headgear, Enrollment Badges', 180.00, 4, 2025, undefined, 'Scarf 50pcs @3.60/pc. Cap Headgear and Enrollment Badges included in batch.'),
+  ];
+
+  // ==================================================================
   // STOCK MOVEMENTS — derived from the documents
   // ==================================================================
   const stockMovements: Omit<StockMovement, 'id'>[] = [
@@ -425,6 +505,28 @@ export async function seedHistoricalData() {
 
     // Handbook purchase from Ghana Dec
     sm('2024-12-14', pid('Handbook'), 'purchase', 200, 1.50, 4, 2024, undefined, '200 from Ghana'),
+
+    // ---- 2025 ----
+    // Q4 2025 – Tree of Life purchase Oct
+    sm('2025-10-16', pid('Tree of Life'), 'purchase', 16, 12.00, 4, 2025, undefined, '16 pcs from Ghana @12/pc'),
+
+    // Q4 2025 – Lacoste T-Shirt 40pcs Oct (part of batch with Tree of Life)
+    sm('2025-10-16', pid('Lacoste'), 'purchase', 40, 5.00, 4, 2025, undefined, '40 pcs T-shirts, part of batch purchase'),
+
+    // Q4 2025 – Scarf 50pcs Dec
+    sm('2025-12-21', pid('Scarf'), 'purchase', 50, 3.60, 4, 2025, undefined, '50 scarves @3.60/pc from Ghana'),
+
+    // Q4 2025 – Lacoste T-Shirt 9pcs Dec
+    sm('2025-12-12', pid('Lacoste'), 'purchase', 9, 1.51, 4, 2025, undefined, '9 pcs Lacoste T-shirt, part of combined purchase batch'),
+
+    // Q4 2025 – Enrolment Badge 100pcs Dec
+    sm('2025-12-12', pid('Enrolment'), 'purchase', 100, 2.00, 4, 2025, undefined, '100 enrolment badges, part of combined purchase batch'),
+
+    // Q4 2025 – Headgear 15pcs Dec
+    sm('2025-12-12', pid('Headgear'), 'purchase', 15, 2.00, 4, 2025, undefined, '15 headgear caps, part of combined purchase batch'),
+
+    // Q3 2025 – Jacket sale/distribution to Berlin seebranch
+    sm('2025-09-25', pid('Jacket'), 'sale', 11, 34.82, 3, 2025, undefined, 'Berlin seebranch – 11 jackets plus others, total €383'),
   ];
 
   // ==================================================================
@@ -487,6 +589,10 @@ export async function seedHistoricalData() {
     ...q2_2024,
     ...q3_2024,
     ...q4_2024,
+    ...q1_2025,
+    ...q2_2025,
+    ...q3_2025,
+    ...q4_2025,
   ];
 
   await db.transactions.bulkAdd(allTransactions as Transaction[]);
