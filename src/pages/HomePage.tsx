@@ -145,7 +145,7 @@ export default function HomePage() {
             exit={{ opacity: 0, height: 0, marginBottom: 0 }}
             className="overflow-hidden"
           >
-            <div className="relative bg-gradient-to-r from-navy to-navy-light rounded-2xl p-4 text-white shadow-lg">
+            <div className="relative bg-linear-to-r from-navy to-navy-light rounded-2xl p-4 text-white shadow-lg">
               <button
                 onClick={dismiss}
                 className="absolute top-2 right-2 w-6 h-6 rounded-full bg-white/10 flex items-center justify-center hover:bg-white/20 transition-colors"
@@ -154,7 +154,7 @@ export default function HomePage() {
                 <X size={12} />
               </button>
               <div className="flex items-center gap-3">
-                <div className="w-12 h-12 rounded-xl bg-gold/20 flex items-center justify-center flex-shrink-0">
+                <div className="w-12 h-12 rounded-xl bg-gold/20 flex items-center justify-center shrink-0">
                   <Download size={22} className="text-gold" />
                 </div>
                 <div className="flex-1 min-w-0">
@@ -182,7 +182,7 @@ export default function HomePage() {
             exit={{ opacity: 0, height: 0, marginBottom: 0 }}
             className="overflow-hidden"
           >
-            <div className="relative bg-gradient-to-r from-navy to-navy-light rounded-2xl p-4 text-white shadow-lg">
+            <div className="relative bg-linear-to-r from-navy to-navy-light rounded-2xl p-4 text-white shadow-lg">
               <button
                 onClick={dismiss}
                 className="absolute top-2 right-2 w-6 h-6 rounded-full bg-white/10 flex items-center justify-center hover:bg-white/20 transition-colors"
@@ -191,7 +191,7 @@ export default function HomePage() {
                 <X size={12} />
               </button>
               <div className="flex items-center gap-3">
-                <div className="w-12 h-12 rounded-xl bg-gold/20 flex items-center justify-center flex-shrink-0">
+                <div className="w-12 h-12 rounded-xl bg-gold/20 flex items-center justify-center shrink-0">
                   <Download size={22} className="text-gold" />
                 </div>
                 <div className="flex-1 min-w-0">

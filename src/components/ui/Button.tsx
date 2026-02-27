@@ -65,7 +65,7 @@ export default function Button({
           transition={{ duration: 0.8, repeat: Infinity, ease: 'linear' }}
         />
       ) : icon ? (
-        <span className="flex-shrink-0">{icon}</span>
+        <span className="shrink-0">{icon}</span>
       ) : null}
       {children}
     </motion.button>

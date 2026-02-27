@@ -494,7 +494,7 @@ function DetailRow({
 }) {
   return (
     <div className="flex items-start gap-3">
-      <div className="w-8 h-8 rounded-lg bg-cream flex items-center justify-center text-text-secondary flex-shrink-0 mt-0.5">
+      <div className="w-8 h-8 rounded-lg bg-cream flex items-center justify-center text-text-secondary shrink-0 mt-0.5">
         {icon}
       </div>
       <div className="flex-1 min-w-0">
