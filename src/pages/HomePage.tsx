@@ -2,7 +2,7 @@
 // Home Page — Dashboard with Martha greeting
 // ============================================================
 
-import { useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
@@ -24,6 +24,7 @@ import {
 import MarthaAssistant from '../components/martha/MarthaAssistant';
 import SummaryCard from '../components/ui/SummaryCard';
 import Card from '../components/ui/Card';
+import TransactionDetailModal from '../components/ui/TransactionDetailModal';
 import { useTransactionStore } from '../store/useTransactionStore';
 import { useCircuitStore } from '../store/useCircuitStore';
 import { useInventoryStore } from '../store/useInventoryStore';
@@ -41,6 +42,10 @@ export default function HomePage() {
 
   const loading = txnLoading || circuitLoading || invLoading;
   const { showBanner, showIOSGuide, install, dismiss } = useInstallPrompt();
+
+  // Transaction detail modal state
+  const [selectedTxn, setSelectedTxn] = useState<import('../types').Transaction | null>(null);
+  const [showTxnModal, setShowTxnModal] = useState(false);
 
   const currentQ = getCurrentQuarter();
   const currentY = getCurrentYear();
@@ -296,7 +301,15 @@ export default function HomePage() {
         ) : (
           <div className="space-y-2">
             {recentTransactions.map((txn, i) => (
-              <Card key={txn.uid} className="p-3 flex items-center gap-3" delay={0.35 + i * 0.05}>
+              <Card
+                key={txn.uid}
+                className="p-3 flex items-center gap-3 cursor-pointer active:scale-[0.98] transition-transform"
+                delay={0.35 + i * 0.05}
+                onClick={() => {
+                  setSelectedTxn(txn);
+                  setShowTxnModal(true);
+                }}
+              >
                 <div
                   className={`w-8 h-8 rounded-lg flex items-center justify-center ${
                     txn.type === 'receipt'
@@ -334,6 +347,16 @@ export default function HomePage() {
           </div>
         )}
       </div>
+
+      {/* Transaction Detail Modal */}
+      <TransactionDetailModal
+        transaction={selectedTxn}
+        isOpen={showTxnModal}
+        onClose={() => {
+          setShowTxnModal(false);
+          setSelectedTxn(null);
+        }}
+      />
 
       {/* Quick Stats Row */}
       <Card className="p-4 mb-2">
