@@ -513,17 +513,32 @@ export async function seedHistoricalData() {
     // Q4 2025 – Lacoste T-Shirt 40pcs Oct (part of batch with Tree of Life)
     sm('2025-10-16', pid('Lacoste'), 'purchase', 40, 5.00, 4, 2025, undefined, '40 pcs T-shirts, part of batch purchase'),
 
-    // Q4 2025 – Scarf 50pcs Dec
-    sm('2025-12-21', pid('Scarf'), 'purchase', 50, 3.60, 4, 2025, undefined, '50 scarves @3.60/pc from Ghana'),
+    // Q4 2025 – Scarf 70pcs total
+    sm('2025-12-21', pid('Scarf'), 'purchase', 70, 2.57, 4, 2025, undefined, '70 scarves purchased for 2024-2025 period'),
 
     // Q4 2025 – Lacoste T-Shirt 9pcs Dec
     sm('2025-12-12', pid('Lacoste'), 'purchase', 9, 1.51, 4, 2025, undefined, '9 pcs Lacoste T-shirt, part of combined purchase batch'),
 
-    // Q4 2025 – Enrolment Badge 100pcs Dec
-    sm('2025-12-12', pid('Enrolment'), 'purchase', 100, 2.00, 4, 2025, undefined, '100 enrolment badges, part of combined purchase batch'),
+    // Q4 2025 – Enrolment Badge 150pcs total
+    sm('2025-12-12', pid('Enrolment'), 'purchase', 150, 2.00, 4, 2025, undefined, '150 enrolment badges purchased for 2024-2025 period'),
 
-    // Q4 2025 – Headgear 15pcs Dec
-    sm('2025-12-12', pid('Headgear'), 'purchase', 15, 2.00, 4, 2025, undefined, '15 headgear caps, part of combined purchase batch'),
+    // Q4 2025 – Headgear 35pcs total
+    sm('2025-12-12', pid('Headgear'), 'purchase', 35, 2.00, 4, 2025, undefined, '35 headgear caps purchased for 2024-2025 period'),
+
+    // Q4 2025 – Handbook 250pcs
+    sm('2025-11-25', pid('Handbook'), 'purchase', 250, 3.25, 4, 2025, undefined, '250 handbooks purchased from Ghana'),
+
+    // Q4 2025 – Officer's Badge 324pcs
+    sm('2025-12-06', pid('Officer'), 'purchase', 324, 3.02, 4, 2025, undefined, '324 Branch Officer Badges from Ghana'),
+
+    // Q4 2025 – Golden Badge 3pcs
+    sm('2025-12-12', pid('Gold Badge'), 'purchase', 3, 6.00, 4, 2025, undefined, '3 golden badges'),
+
+    // Q4 2025 – Enrolment Service Book 10pcs
+    sm('2025-12-12', pid('Enrolment Service'), 'purchase', 10, 1.36, 4, 2025, undefined, '10 enrolment service books'),
+
+    // Q2 2025 – Europe Cloth 280pcs
+    sm('2025-04-23', pid('Europe Cloth'), 'purchase', 280, 21.43, 2, 2025, undefined, '280 Europe Mission Cloth'),
 
     // Q3 2025 – Jacket sale/distribution to Berlin seebranch
     sm('2025-09-25', pid('Jacket'), 'sale', 11, 34.82, 3, 2025, undefined, 'Berlin seebranch – 11 jackets plus others, total €383'),
