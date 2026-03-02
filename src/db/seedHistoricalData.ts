@@ -413,6 +413,42 @@ export async function seedHistoricalData() {
   ];
 
   // ==================================================================
+  // COUNTRY / CIRCUITS OWING EUROPE MISSION — 2024/25
+  // ------------------------------------------------------------------
+  //   Hamburg Circuit     —   €532.00
+  //   Italy Circuit       — €1,624.00
+  //   Holland Circuit     — €1,000.00
+  //   Stuttgart Circuit   —   €800.00
+  //   Finland Circuit     —       nil
+  //   Modena Circuit      —       nil
+  //   Dusseldorf Circuit  —   €645.00
+  //                       -----------
+  //   Total Outstanding   — €4,601.00
+  // ==================================================================
+  // Record the outstanding debts as debt-tracking transactions so
+  // Martha can report on them.  Category = 'debt_repayment' with
+  // type = 'receipt' & amount = 0 would be confusing, so we record
+  // the owed amounts as dedicated notes on a summary date.
+  // Using the end of the 2024/25 financial year (2025-03-31) as the
+  // reference date.
+  const circuitDebts_2024_25: Omit<Transaction, 'id'>[] = [
+    txn('2025-03-31', 'receipt', 'debt_repayment', 'Outstanding debt – Hamburg Circuit (2024/25)', 0, 1, 2025, cid('Hamburg'),
+      'Hamburg Circuit owes €532.00 to Europe Mission as at end of 2024/25'),
+    txn('2025-03-31', 'receipt', 'debt_repayment', 'Outstanding debt – Italy Circuit (2024/25)', 0, 1, 2025, cid('Italy'),
+      'Italy Circuit owes €1,624.00 to Europe Mission as at end of 2024/25'),
+    txn('2025-03-31', 'receipt', 'debt_repayment', 'Outstanding debt – Holland Circuit (2024/25)', 0, 1, 2025, cid('Holland'),
+      'Holland Circuit owes €1,000.00 to Europe Mission as at end of 2024/25'),
+    txn('2025-03-31', 'receipt', 'debt_repayment', 'Outstanding debt – Stuttgart Circuit (2024/25)', 0, 1, 2025, cid('Stuttgart'),
+      'Stuttgart Circuit owes €800.00 to Europe Mission as at end of 2024/25'),
+    txn('2025-03-31', 'receipt', 'debt_repayment', 'Outstanding debt – Finland Circuit (2024/25)', 0, 1, 2025, cid('Finland'),
+      'Finland Circuit owes nil to Europe Mission as at end of 2024/25'),
+    txn('2025-03-31', 'receipt', 'debt_repayment', 'Outstanding debt – Modena Circuit (2024/25)', 0, 1, 2025, cid('Italy'),
+      'Modena Circuit (Italy sub-branch) owes nil to Europe Mission as at end of 2024/25'),
+    txn('2025-03-31', 'receipt', 'debt_repayment', 'Outstanding debt – Dusseldorf Circuit (2024/25)', 0, 1, 2025, cid('Dusseldorf'),
+      'Dusseldorf Circuit owes €645.00 to Europe Mission as at end of 2024/25'),
+  ];
+
+  // ==================================================================
   // STOCK MOVEMENTS — derived from the documents
   // ==================================================================
   const stockMovements: Omit<StockMovement, 'id'>[] = [
@@ -608,6 +644,7 @@ export async function seedHistoricalData() {
     ...q2_2025,
     ...q3_2025,
     ...q4_2025,
+    ...circuitDebts_2024_25,
   ];
 
   await db.transactions.bulkAdd(allTransactions as Transaction[]);
