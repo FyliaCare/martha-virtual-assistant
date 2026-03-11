@@ -9,7 +9,7 @@ import { seedHistoricalData } from './seedHistoricalData';
 
 // Bump this version whenever seed data changes to force a re-seed.
 // The app stores the last-applied seed version in localStorage.
-const SEED_DATA_VERSION = 2; // v2: added 2024/25 circuit outstanding debts
+const SEED_DATA_VERSION = 3; // v3: Q1 2026 data, updated debts (+€40 handbook), Ghana cost prices, stock balances, Hamburg cloth Nov 2026
 const SEED_VERSION_KEY = 'martha_seed_version';
 
 export async function seedDatabase() {

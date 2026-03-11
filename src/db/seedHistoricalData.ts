@@ -6,6 +6,15 @@
 //   - Q2 2024 (Apr–Jun)
 //   - Q3 2024 (Jul–Sep)
 //   - Q4 2024 (Oct–Dec)
+//   - Q1–Q4 2025
+//   - Q1 2026 (Jan–Mar)
+//   - Holland Circuit Accounts Jan 2024–Oct 2025
+//   - Purchase from Ghana 2024/25
+//   - Circuit debts 2024/25 (updated with +€40 handbook levy)
+//   - Hamburg Circuit Accounts (cont. Nov 2026)
+//   - Finland Circuit – Europe Mission Cloth
+//   - Remaining stock balances
+//   - Complimentary/Gratis distributions
 // ============================================================
 
 import { db } from './database';
@@ -414,38 +423,124 @@ export async function seedHistoricalData() {
 
   // ==================================================================
   // COUNTRY / CIRCUITS OWING EUROPE MISSION — 2024/25
+  // Updated: +€40 Handbook 2026 levy per circuit
   // ------------------------------------------------------------------
-  //   Hamburg Circuit     —   €532.00
-  //   Italy Circuit       — €1,624.00
-  //   Holland Circuit     — €1,000.00
-  //   Stuttgart Circuit   —   €800.00
+  //   Hamburg Circuit     —   €532.00 + €40.00 = €572.00
+  //   Italy Circuit       — €1,624.00 + €40.00 = €1,664.00
+  //   Holland Circuit     —   €548.00 + €40.00 = €588.00
+  //   Stuttgart Circuit   —   €600.00 + €40.00 = €640.00
   //   Finland Circuit     —       nil
   //   Modena Circuit      —       nil
-  //   Dusseldorf Circuit  —   €645.00
+  //   Dusseldorf Circuit  —   €645.00 + €40.00 = €685.00
   //                       -----------
-  //   Total Outstanding   — €4,601.00
+  //   Total Outstanding   — €4,149.00 (updated)
   // ==================================================================
-  // Record the outstanding debts as debt-tracking transactions so
-  // Martha can report on them.  Category = 'debt_repayment' with
-  // type = 'receipt' & amount = 0 would be confusing, so we record
-  // the owed amounts as dedicated notes on a summary date.
-  // Using the end of the 2024/25 financial year (2025-03-31) as the
-  // reference date.
   const circuitDebts_2024_25: Omit<Transaction, 'id'>[] = [
     txn('2025-03-31', 'receipt', 'debt_repayment', 'Outstanding debt – Hamburg Circuit (2024/25)', 0, 1, 2025, cid('Hamburg'),
-      'Hamburg Circuit owes €532.00 to Europe Mission as at end of 2024/25'),
+      'Hamburg Circuit owes €572.00 to Europe Mission (€532.00 + €40.00 handbook levy) as at end of 2024/25'),
     txn('2025-03-31', 'receipt', 'debt_repayment', 'Outstanding debt – Italy Circuit (2024/25)', 0, 1, 2025, cid('Italy'),
-      'Italy Circuit owes €1,624.00 to Europe Mission as at end of 2024/25'),
+      'Italy Circuit owes €1,664.00 to Europe Mission (€1,624.00 + €40.00 handbook levy) as at end of 2024/25'),
     txn('2025-03-31', 'receipt', 'debt_repayment', 'Outstanding debt – Holland Circuit (2024/25)', 0, 1, 2025, cid('Holland'),
-      'Holland Circuit owes €1,000.00 to Europe Mission as at end of 2024/25'),
+      'Holland Circuit owes €588.00 to Europe Mission (€548.00 + €40.00 handbook levy) as at end of 2024/25'),
     txn('2025-03-31', 'receipt', 'debt_repayment', 'Outstanding debt – Stuttgart Circuit (2024/25)', 0, 1, 2025, cid('Stuttgart'),
-      'Stuttgart Circuit owes €800.00 to Europe Mission as at end of 2024/25'),
+      'Stuttgart Circuit owes €640.00 to Europe Mission (€600.00 + €40.00 handbook levy) as at end of 2024/25'),
     txn('2025-03-31', 'receipt', 'debt_repayment', 'Outstanding debt – Finland Circuit (2024/25)', 0, 1, 2025, cid('Finland'),
       'Finland Circuit owes nil to Europe Mission as at end of 2024/25'),
     txn('2025-03-31', 'receipt', 'debt_repayment', 'Outstanding debt – Modena Circuit (2024/25)', 0, 1, 2025, cid('Italy'),
       'Modena Circuit (Italy sub-branch) owes nil to Europe Mission as at end of 2024/25'),
     txn('2025-03-31', 'receipt', 'debt_repayment', 'Outstanding debt – Dusseldorf Circuit (2024/25)', 0, 1, 2025, cid('Dusseldorf'),
-      'Dusseldorf Circuit owes €645.00 to Europe Mission as at end of 2024/25'),
+      'Dusseldorf Circuit owes €685.00 to Europe Mission (€645.00 + €40.00 handbook levy) as at end of 2024/25'),
+  ];
+
+  // ==================================================================
+  // QUARTER 1 — JANUARY TO MARCH 2026
+  // ==================================================================
+  const q1_2026: Omit<Transaction, 'id'>[] = [
+    // ---- RECEIPTS FROM CIRCUITS ----
+    txn('2026-03-21', 'receipt', 'circuit_contribution', 'Holland Circuit Payment', 548.00, 1, 2026, cid('Holland'),
+      'Holland Circuit Q1 2026 payment – total balance to pay as per Holland accounts'),
+    txn('2026-02-14', 'receipt', 'circuit_contribution', 'Stuttgart Circuit Payment', 200.00, 1, 2026, cid('Stuttgart')),
+    txn('2026-03-07', 'receipt', 'circuit_contribution', 'Dusseldorf Circuit Payment', 370.00, 1, 2026, cid('Dusseldorf'),
+      'Dusseldorf circuit payment for Q1 2026'),
+    txn('2026-03-07', 'receipt', 'merchandise_sale', "Dusseldorf – Officer's Badge 22pcs", 110.00, 1, 2026, cid('Dusseldorf'),
+      "Officer's Badge 22 × €5.00 = €110.00"),
+    txn('2026-02-14', 'receipt', 'merchandise_sale', "Stuttgart – Officer's Badge 22pcs", 110.00, 1, 2026, cid('Stuttgart'),
+      "Officer's Badge 22 × €5.00 = €110.00 paid"),
+
+    // ---- Cash Sales for Hamburg Circuit ----
+    txn('2026-01-15', 'receipt', 'merchandise_sale', 'Cash sales – Hamburg: T-shirts 3pcs', 30.00, 1, 2026, cid('Hamburg'),
+      'T-shirts 3 × €10.00 = €30.00'),
+    txn('2026-01-15', 'receipt', 'merchandise_sale', 'Cash sales – Hamburg: Jackets 2pcs', 80.00, 1, 2026, cid('Hamburg'),
+      'Jackets 2 × €40.00 = €80.00'),
+    txn('2026-01-15', 'receipt', 'merchandise_sale', 'Cash sales – Hamburg: Badges 2pcs', 10.00, 1, 2026, cid('Hamburg'),
+      'Badges 2 × €5.00 = €10.00'),
+    txn('2026-01-15', 'receipt', 'merchandise_sale', 'Cash sales – Hamburg: Scarf 1pc', 5.00, 1, 2026, cid('Hamburg'),
+      'Scarf 1 × €5.00 = €5.00'),
+
+    // ---- Finland Circuit – Europe Mission Cloth ----
+    txn('2026-01-20', 'receipt', 'merchandise_sale', 'Finland Circuit – Europe Mission Cloth', 415.00, 1, 2026, cid('Finland'),
+      'Europe Mission cloth: 10 full pcs × €40.00 + 4 yds @ €15.00 = €400.00 + €15.00 (4yds) = €415.00. Paid in full.'),
+
+    // ---- PAYMENTS (EXPENSES) ----
+    txn('2026-01-21', 'payment', 'donation_given', 'Connectional Payment at Holland', 500.00, 1, 2026, cid('Holland'),
+      'Connectional payment made at Holland circuit'),
+    txn('2026-01-21', 'payment', 'postage', 'Postage to Italy Circuit', 31.90, 1, 2026, cid('Italy'),
+      'Postage/shipping to Italy circuit'),
+    txn('2026-01-21', 'payment', 'merchandise_purchase', 'Tree of Life – 1 full & 8yds', 125.00, 1, 2026, undefined,
+      'Tree of Life purchase: 1 full piece and 8 yards'),
+
+    // ---- Handbook 2026 Distribution (stock movement, cost recorded) ----
+    txn('2026-01-25', 'payment', 'postage', 'Handbook 2026 distribution – postage & handling', 0, 1, 2026, undefined,
+      'Handbook 26 distributed: Hamburg 10, Stuttgart 12, Holland 11, Belgium 10, Italy 24. Total 67 copies.'),
+
+    // ---- Complimentary/Gratis ----
+    txn('2026-02-01', 'payment', 'donation_given', 'Complimentary – Europe Mission Cloth to Connectional Women\'s Fellowship', 0, 1, 2026, undefined,
+      'Gratis: 3 full pcs and 8yds of Europe Mission cloth given to Connectional Women\'s Fellowship'),
+  ];
+
+  // ==================================================================
+  // HOLLAND CIRCUIT ACCOUNTS — JANUARY 2024 TO OCTOBER 2025
+  // (from the Holland Circuit document/image)
+  // ------------------------------------------------------------------
+  // Receipts from Holland:
+  //   20/8/24  Impress Postage & Stationary      250.00
+  //   20/8/24  Stationery & postage to circuits   232.00
+  //   17/6/25  Payment                             320.00
+  //   15/8/25  Payment                             650.00
+  //   15/8/25  Levy for cape coast project         200.00
+  //   15/8/25  Payment                             200.00
+  //   15/10/25 Payment                             157.00
+  //   15/10/25 Payment                           1,000.00
+  //   1/11/25  Payment                              50.00
+  //                                    Total Paid 2,327.00 (+ 232.00 received)
+  //
+  // Items delivered to Holland:
+  //   20/8/24  One Bad Jacket paid                  32.00
+  //   15/4/25  Handbook Soft and Hard copy           70.00
+  //   24/7/25  Europe Mission Diocese Jacket 15pcs 555.00 (37×15)
+  //   15/10/25 EMD Cloth 50 Pcs 1x12 full pieces 2,000.00 (40×50)
+  //                                    Total       2,825.00 (inc. 250 impress)
+  //
+  // Total Balance to pay = 548.00
+  // Note: 498.00 outstanding + 50.00 paid 1/11/25 = 548.00
+  // Already recorded in Q2-Q4 2025 transactions above.
+  // ==================================================================
+
+  // ==================================================================
+  // HAMBURG CIRCUIT ACCOUNTS cont. — Nov 2026
+  // ------------------------------------------------------------------
+  //   Europe Mission cloth: 47 pcs 1x12 @€40.00 = €1,880.00
+  //   Amount paid: €1,575.00
+  //   Balance: €305.00
+  // ==================================================================
+  // This is a future transaction (Nov 2026), seed as Q4 2026 data
+  const hamburg_cloth_2026: Omit<Transaction, 'id'>[] = [
+    txn('2026-11-01', 'receipt', 'merchandise_sale', 'Hamburg Circuit – Europe Mission Cloth 47pcs', 1880.00, 4, 2026, cid('Hamburg'),
+      'Europe Mission cloth 47 pcs 1×12 @ €40.00 = €1,880.00. Amount invoiced.'),
+    txn('2026-11-01', 'receipt', 'debt_repayment', 'Hamburg Circuit – Europe Mission Cloth partial payment', 1575.00, 4, 2026, cid('Hamburg'),
+      'Amount paid towards Europe Mission cloth 47 pcs order.'),
+    txn('2026-11-01', 'receipt', 'debt_repayment', 'Outstanding – Hamburg Circuit cloth balance', 0, 4, 2026, cid('Hamburg'),
+      'Hamburg Circuit owes €305.00 balance on Europe Mission cloth (€1,880.00 - €1,575.00 paid)'),
   ];
 
   // ==================================================================
@@ -578,6 +673,38 @@ export async function seedHistoricalData() {
 
     // Q3 2025 – Jacket sale/distribution to Berlin seebranch
     sm('2025-09-25', pid('Jacket'), 'sale', 11, 34.82, 3, 2025, undefined, 'Berlin seebranch – 11 jackets plus others, total €383'),
+
+    // ==================================================================
+    // Q1 2026 Stock Movements
+    // ==================================================================
+
+    // ---- Cash Sales Hamburg Q1 2026 ----
+    sm('2026-01-15', pid('Lacoste'), 'sale', 3, 10.00, 1, 2026, cid('Hamburg'), 'Cash sales – T-shirts 3 @ €10'),
+    sm('2026-01-15', pid('Jacket'), 'sale', 2, 40.00, 1, 2026, cid('Hamburg'), 'Cash sales – Jackets 2 @ €40'),
+    sm('2026-01-15', pid('Officer'), 'sale', 2, 5.00, 1, 2026, cid('Hamburg'), 'Cash sales – Badges 2 @ €5'),
+    sm('2026-01-15', pid('Scarf'), 'sale', 1, 5.00, 1, 2026, cid('Hamburg'), 'Cash sales – Scarf 1 @ €5'),
+
+    // ---- Finland – Europe Mission Cloth Q1 2026 ----
+    sm('2026-01-20', pid('Europe Cloth'), 'sale', 10, 40.00, 1, 2026, cid('Finland'), 'Europe Mission cloth 10 full pcs × €40'),
+
+    // ---- Dusseldorf – Officer's Badge Q1 2026 ----
+    sm('2026-03-07', pid('Officer'), 'sale', 22, 5.00, 1, 2026, cid('Dusseldorf'), "Officer's Badge 22pcs @ €5"),
+
+    // ---- Stuttgart – Officer's Badge Q1 2026 ----
+    sm('2026-02-14', pid('Officer'), 'sale', 22, 5.00, 1, 2026, cid('Stuttgart'), "Officer's Badge 22pcs @ €5"),
+
+    // ---- Handbook 2026 Distribution (67 copies total) ----
+    sm('2026-01-25', pid('Handbook'), 'sale', 10, 4.00, 1, 2026, cid('Hamburg'), 'Handbook 26 distribution – Hamburg 9+1=10'),
+    sm('2026-01-25', pid('Handbook'), 'sale', 12, 4.00, 1, 2026, cid('Stuttgart'), 'Handbook 26 distribution – Stuttgart 12'),
+    sm('2026-01-25', pid('Handbook'), 'sale', 11, 4.00, 1, 2026, cid('Holland'), 'Handbook 26 distribution – Holland 10+1=11'),
+    sm('2026-01-25', pid('Handbook'), 'sale', 10, 4.00, 1, 2026, cid('Belgium'), 'Handbook 26 distribution – Belgium 9+1=10'),
+    sm('2026-01-25', pid('Handbook'), 'sale', 24, 4.00, 1, 2026, cid('Italy'), 'Handbook 26 distribution – Italy 23+1=24'),
+
+    // ---- Complimentary/Gratis – Europe Mission Cloth to Women's Fellowship ----
+    sm('2026-02-01', pid('Europe Cloth'), 'sale', 3, 0, 1, 2026, undefined, 'Complimentary/Gratis – 3 full pcs to Connectional Women\'s Fellowship'),
+
+    // ---- Hamburg Cloth Nov 2026 (future – 47 pcs sold) ----
+    sm('2026-11-01', pid('Europe Cloth'), 'sale', 47, 40.00, 4, 2026, cid('Hamburg'), 'Europe Mission cloth 47 pcs 1×12 @ €40 = €1,880'),
   ];
 
   // ==================================================================
@@ -645,6 +772,8 @@ export async function seedHistoricalData() {
     ...q3_2025,
     ...q4_2025,
     ...circuitDebts_2024_25,
+    ...q1_2026,
+    ...hamburg_cloth_2026,
   ];
 
   await db.transactions.bulkAdd(allTransactions as Transaction[]);
@@ -683,6 +812,83 @@ export async function seedHistoricalData() {
     }
   }
   console.log('[Martha] Product stock levels updated from movements.');
+
+  // ==================================================================
+  // OVERRIDE REMAINING STOCK BALANCES
+  // ------------------------------------------------------------------
+  // Per the latest physical stock count / balance of remaining stocks:
+  //   Jackets           48 @ €37.00
+  //   Europe Cloth      40 @ €40.00
+  //   Cap Headgear      20 @ €4.00
+  //   Scarfs            50 @ €4.00
+  //   Enrol Badge       50 @ €4.00
+  //   Off. Badge       186 @ €4.50
+  //   Regalia            6 @ €6.00
+  //   Tree of Life      16 @ €50.75
+  //   Handbook         100 @ €1.38
+  //   T-shirts          37 @ €5.50
+  // ==================================================================
+  const stockOverrides: Record<string, { stock: number; sellingPrice: number }> = {
+    'Jacket': { stock: 48, sellingPrice: 37.00 },
+    'Europe Cloth': { stock: 40, sellingPrice: 40.00 },
+    'Headgear': { stock: 20, sellingPrice: 4.00 },
+    'Scarf': { stock: 50, sellingPrice: 4.00 },
+    'Enrolment Badge': { stock: 50, sellingPrice: 4.00 },
+    'Officer': { stock: 186, sellingPrice: 4.50 },
+    'Regalia': { stock: 6, sellingPrice: 6.00 },
+    'Tree of Life': { stock: 16, sellingPrice: 50.75 },
+    'Handbook': { stock: 100, sellingPrice: 1.38 },
+    'Lacoste': { stock: 37, sellingPrice: 5.50 },
+  };
+
+  for (const [fragment, override] of Object.entries(stockOverrides)) {
+    const product = allProducts.find((p) => p.name.toLowerCase().includes(fragment.toLowerCase()));
+    if (product && product.id) {
+      await db.products.update(product.id, {
+        currentStock: override.stock,
+        sellingPrice: override.sellingPrice,
+        updatedAt: now(),
+      });
+    }
+  }
+  console.log('[Martha] Remaining stock balances overridden from physical count.');
+
+  // ==================================================================
+  // UPDATE PRODUCT COST PRICES — from Ghana 2024/25 purchase records
+  // ------------------------------------------------------------------
+  //   Headgear        35 @ €1.90
+  //   Jackets        250 @ €37.00
+  //   Europe Cloth   280 @ €40.00
+  //   Scarfs          20 @ €2.50,  50 @ €2.00
+  //   Handbook       150 @ €2.50, 100 @ €1.38
+  //   T-shirts        40 @ €4.80,   9 @ €5.50
+  //   Enrolment Badge 150 @ €1.98
+  //   Enrolment Bk    10 @ €1.50
+  //   Tree of Life    16 @ €50.75
+  //   Branch Off. Bd 324 @ €3.85
+  //   Gold Badge       3 @ €3.50
+  // ==================================================================
+  const costUpdates: Record<string, number> = {
+    'Headgear': 1.90,
+    'Jacket': 37.00,
+    'Europe Cloth': 40.00,
+    'Scarf': 2.50,
+    'Handbook': 2.50,
+    'Lacoste': 4.80,
+    'Enrolment Badge': 1.98,
+    'Enrolment Service': 1.50,
+    'Tree of Life': 50.75,
+    'Officer': 3.85,
+    'Gold Badge': 3.50,
+  };
+
+  for (const [fragment, costPrice] of Object.entries(costUpdates)) {
+    const product = allProducts.find((p) => p.name.toLowerCase().includes(fragment.toLowerCase()));
+    if (product && product.id) {
+      await db.products.update(product.id, { costPrice, updatedAt: now() });
+    }
+  }
+  console.log('[Martha] Product cost prices updated from Ghana 2024/25 purchase data.');
 
   console.log('[Martha] Historical data seeding complete!');
 }

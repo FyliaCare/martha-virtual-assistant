@@ -13,6 +13,7 @@ import ReportsPage from './pages/ReportsPage';
 import InventoryPage from './pages/InventoryPage';
 import CircuitsPage from './pages/CircuitsPage';
 import SettingsPage from './pages/SettingsPage';
+import ComprehensiveReportPage from './pages/ComprehensiveReportPage';
 import { seedDatabase } from './db/seed';
 
 function App() {
@@ -30,6 +31,7 @@ function App() {
             <Route path="/reports" element={<ReportsPage />} />
             <Route path="/inventory" element={<InventoryPage />} />
             <Route path="/circuits" element={<CircuitsPage />} />
+            <Route path="/comprehensive-report" element={<ComprehensiveReportPage />} />
             <Route path="/settings" element={<SettingsPage />} />
           </Routes>
         </AnimatePresence>

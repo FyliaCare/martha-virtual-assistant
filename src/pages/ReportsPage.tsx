@@ -3,6 +3,7 @@
 // ============================================================
 
 import { useEffect, useState, useMemo } from 'react';
+import { useNavigate } from 'react-router-dom';
 import {
   BarChart3,
   Download,
@@ -18,6 +19,7 @@ import {
   Target,
   Calendar,
   Zap,
+  BookOpen,
 } from 'lucide-react';
 import {
   BarChart,
@@ -52,6 +54,7 @@ export default function ReportsPage() {
   const { transactions, loading: txnLoading, loadAll } = useTransactionStore();
   const { circuits, loading: circuitLoading, loadCircuits } = useCircuitStore();
   const { speak } = useMarthaStore();
+  const navigate = useNavigate();
 
   const loading = txnLoading || circuitLoading;
 
@@ -261,7 +264,7 @@ export default function ReportsPage() {
             {showExportMenu && (
               <>
                 <div className="fixed inset-0 z-40" onClick={() => setShowExportMenu(false)} />
-                <div className="absolute right-0 top-full mt-2 z-50 bg-white rounded-xl shadow-lg border border-border/50 py-2 min-w-[200px]">
+                <div className="absolute right-0 top-full mt-2 z-50 bg-white rounded-xl shadow-lg border border-border/50 py-2 min-w-50">
                   <button
                     onClick={handlePDF}
                     disabled={isGeneratingPDF}
@@ -318,6 +321,24 @@ export default function ReportsPage() {
       <div className="mb-4">
         <MarthaAssistant size="sm" layout="horizontal" />
       </div>
+
+      {/* Full Comprehensive Report Banner */}
+      <Card className="p-4 mb-4 bg-linear-to-r from-navy/5 to-gold/10 border border-gold/20" delay={0.05}>
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-xl bg-navy/10 flex items-center justify-center">
+              <BookOpen size={20} className="text-navy" />
+            </div>
+            <div>
+              <p className="text-sm font-bold text-navy">Comprehensive Report</p>
+              <p className="text-[10px] text-text-secondary">Full financial overview Q4 2023 – Q1 2026</p>
+            </div>
+          </div>
+          <Button variant="gold" size="sm" onClick={() => navigate('/comprehensive-report')}>
+            View
+          </Button>
+        </div>
+      </Card>
 
       {/* Loading Indicator */}
       {loading && (

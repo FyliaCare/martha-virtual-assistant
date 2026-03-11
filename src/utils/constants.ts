@@ -47,19 +47,19 @@ export const DEFAULT_CIRCUITS = [
 // ---- Default Products ----
 
 export const DEFAULT_PRODUCTS = [
-  { name: 'Jacket (New)', costPrice: 35.00, sellingPrice: 37.00, category: 'clothing' as const, reorderLevel: 10 },
-  { name: 'Tree of Life (Big)', costPrice: 38.00, sellingPrice: 70.00, category: 'accessory' as const, reorderLevel: 5 },
-  { name: 'Regalia', costPrice: 3.00, sellingPrice: 8.00, category: 'regalia' as const, reorderLevel: 10 },
-  { name: "Officer's Badge", costPrice: 3.00, sellingPrice: 5.00, category: 'badge' as const, reorderLevel: 10 },
-  { name: 'Gold Badge', costPrice: 6.00, sellingPrice: 10.00, category: 'badge' as const, reorderLevel: 3 },
-  { name: 'Enrolment Badge', costPrice: 2.00, sellingPrice: 4.00, category: 'badge' as const, reorderLevel: 10 },
-  { name: 'Headgear (Cap)', costPrice: 2.00, sellingPrice: 4.00, category: 'accessory' as const, reorderLevel: 10 },
+  { name: 'Jacket (New)', costPrice: 37.00, sellingPrice: 37.00, category: 'clothing' as const, reorderLevel: 10 },
+  { name: 'Tree of Life (Big)', costPrice: 50.75, sellingPrice: 50.75, category: 'accessory' as const, reorderLevel: 5 },
+  { name: 'Regalia', costPrice: 3.00, sellingPrice: 6.00, category: 'regalia' as const, reorderLevel: 10 },
+  { name: "Officer's Badge", costPrice: 3.85, sellingPrice: 4.50, category: 'badge' as const, reorderLevel: 10 },
+  { name: 'Gold Badge', costPrice: 3.50, sellingPrice: 10.00, category: 'badge' as const, reorderLevel: 3 },
+  { name: 'Enrolment Badge', costPrice: 1.98, sellingPrice: 4.00, category: 'badge' as const, reorderLevel: 10 },
+  { name: 'Headgear (Cap)', costPrice: 1.90, sellingPrice: 4.00, category: 'accessory' as const, reorderLevel: 10 },
   { name: 'Handbook', costPrice: 2.50, sellingPrice: 4.00, category: 'publication' as const, reorderLevel: 20 },
-  { name: 'Lacoste T-Shirt', costPrice: 5.00, sellingPrice: 8.00, category: 'clothing' as const, reorderLevel: 10 },
+  { name: 'Lacoste T-Shirt', costPrice: 4.80, sellingPrice: 5.50, category: 'clothing' as const, reorderLevel: 10 },
   { name: 'Dues Card', costPrice: 0.30, sellingPrice: 2.00, category: 'accessory' as const, reorderLevel: 20 },
-  { name: 'Scarf', costPrice: 3.60, sellingPrice: 6.00, category: 'accessory' as const, reorderLevel: 10 },
-  { name: 'Europe Cloth', costPrice: 21.43, sellingPrice: 30.00, category: 'clothing' as const, reorderLevel: 10 },
-  { name: 'Enrolment Service Book', costPrice: 1.36, sellingPrice: 3.00, category: 'publication' as const, reorderLevel: 5 },
+  { name: 'Scarf', costPrice: 2.50, sellingPrice: 4.00, category: 'accessory' as const, reorderLevel: 10 },
+  { name: 'Europe Cloth', costPrice: 40.00, sellingPrice: 40.00, category: 'clothing' as const, reorderLevel: 10 },
+  { name: 'Enrolment Service Book', costPrice: 1.50, sellingPrice: 3.00, category: 'publication' as const, reorderLevel: 5 },
 ];
 
 // ---- Quarter Labels ----
