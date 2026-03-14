@@ -105,7 +105,7 @@ export default function HomePage() {
   ];
 
   return (
-    <div className="pb-4 px-4 max-w-lg mx-auto">
+    <div className="pb-4 px-4 lg:px-8 max-w-lg lg:max-w-5xl mx-auto">
       {/* Header */}
       <div className="pt-6 pb-4">
         <motion.div
@@ -114,11 +114,11 @@ export default function HomePage() {
           className="flex items-center justify-between"
         >
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl overflow-hidden shadow-md">
+            <div className="w-10 h-10 rounded-xl overflow-hidden shadow-md lg:hidden">
               <img src="/icons/icon-96.png" alt="Martha" className="w-full h-full" />
             </div>
             <div>
-              <h1 className="text-xl font-bold text-navy">Martha</h1>
+              <h1 className="text-xl lg:text-2xl font-bold text-navy">Martha</h1>
               <p className="text-xs text-text-secondary">Europe Mission Finance</p>
             </div>
           </div>
@@ -223,7 +223,7 @@ export default function HomePage() {
       )}
 
       {/* Summary Cards Grid */}
-      <div className="grid grid-cols-2 gap-3 mb-6">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-6">
         <SummaryCard
           label="Total Receipts"
           value={formatCurrency(totalReceipts)}
@@ -257,7 +257,7 @@ export default function HomePage() {
       {/* Quick Actions */}
       <div className="mb-6">
         <h2 className="text-sm font-bold text-navy mb-3">Quick Actions</h2>
-        <div className="grid grid-cols-3 gap-3">
+        <div className="grid grid-cols-3 lg:grid-cols-6 gap-3">
           {quickActions.map((action, i) => (
             <motion.button
               key={action.label}
@@ -359,7 +359,7 @@ export default function HomePage() {
       />
 
       {/* Quick Stats Row */}
-      <Card className="p-4 mb-2">
+      <Card className="p-4 lg:p-6 mb-2">
         <div className="flex items-center justify-between text-center">
           <div>
             <p className="text-lg font-bold text-navy">{circuits.length}</p>

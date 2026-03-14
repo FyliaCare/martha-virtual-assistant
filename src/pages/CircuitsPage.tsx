@@ -114,7 +114,7 @@ export default function CircuitsPage() {
   };
 
   return (
-    <div className="pb-4 px-4 max-w-lg mx-auto">
+    <div className="pb-4 px-4 lg:px-8 max-w-lg lg:max-w-5xl mx-auto">
       {/* Header */}
       <div className="pt-6 pb-4">
         <div className="flex items-center justify-between">

@@ -12,7 +12,7 @@ export default function FloatingActionButton() {
   return (
     <motion.button
       onClick={() => navigate('/entry')}
-      className="fixed bottom-24 right-5 z-30 w-14 h-14 rounded-full bg-gold text-navy-dark shadow-gold flex items-center justify-center"
+      className="fixed bottom-24 right-5 lg:bottom-8 lg:right-8 z-30 w-14 h-14 rounded-full bg-gold text-navy-dark shadow-gold flex items-center justify-center"
       whileTap={{ scale: 0.9 }}
       whileHover={{ scale: 1.05 }}
       initial={{ scale: 0 }}

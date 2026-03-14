@@ -176,7 +176,7 @@ export default function EditDataPage() {
   const editCategories = editForm.type === 'receipt' ? RECEIPT_CATEGORIES : PAYMENT_CATEGORIES;
 
   return (
-    <div className="pb-24 px-4 max-w-2xl mx-auto">
+    <div className="pb-24 px-4 lg:px-8 max-w-2xl lg:max-w-5xl mx-auto">
       {/* Header */}
       <div className="pt-6 pb-4">
         <div className="flex items-center justify-between mb-2">
@@ -187,7 +187,7 @@ export default function EditDataPage() {
             <p className="text-xs text-text-secondary">{filtered.length} records</p>
           </div>
         </div>
-        <h1 className="text-xl font-bold text-navy">Edit Data</h1>
+        <h1 className="text-xl lg:text-2xl font-bold text-navy">Edit Data</h1>
         <p className="text-xs text-text-secondary mt-1">
           View, search & correct any transaction. Tap the pencil to edit.
         </p>
@@ -214,7 +214,7 @@ export default function EditDataPage() {
           <Filter size={14} className="text-text-secondary" />
           <span className="text-xs font-semibold text-text-secondary">Filters</span>
         </div>
-        <div className="grid grid-cols-3 gap-2">
+        <div className="grid grid-cols-3 lg:grid-cols-5 gap-2">
           <Select
             value={filterType}
             onChange={(e) => setFilterType(e.target.value as 'all' | 'receipt' | 'payment')}

@@ -231,12 +231,12 @@ export default function ReportsPage() {
   ];
 
   return (
-    <div className="pb-4 px-4 max-w-lg mx-auto">
+    <div className="pb-4 px-4 lg:px-8 max-w-lg lg:max-w-5xl mx-auto">
       {/* Header */}
       <div className="pt-6 pb-4">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-xl font-bold text-navy">Reports</h1>
+            <h1 className="text-xl lg:text-2xl font-bold text-navy">Reports</h1>
             <p className="text-xs text-text-secondary">Financial Analytics</p>
           </div>
           <div className="relative">
@@ -362,7 +362,7 @@ export default function ReportsPage() {
       </Card>
 
       {/* Summary Cards */}
-      <div className="grid grid-cols-2 gap-3 mb-4">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-4">
         <SummaryCard
           label="Receipts"
           value={formatCurrency(totalReceipts)}
@@ -417,7 +417,7 @@ export default function ReportsPage() {
             <div className="space-y-4">
               <Card className="p-4" delay={0.2}>
                 <h3 className="text-xs font-bold text-navy mb-3">Monthly Breakdown</h3>
-                <div className="h-48">
+                <div className="h-48 lg:h-72">
                   <ResponsiveContainer width="100%" height="100%">
                     <BarChart data={monthlyData} barGap={4}>
                       <CartesianGrid strokeDasharray="3 3" stroke="#E5E7EB" vertical={false} />
@@ -459,7 +459,7 @@ export default function ReportsPage() {
               {receiptsByCategory.length > 0 && (
                 <Card className="p-4" delay={0.2}>
                   <h3 className="text-xs font-bold text-navy mb-3">Receipts by Category</h3>
-                  <div className="h-48">
+                  <div className="h-48 lg:h-64">
                     <ResponsiveContainer width="100%" height="100%">
                       <RPieChart>
                         <Pie
@@ -511,7 +511,7 @@ export default function ReportsPage() {
               {paymentsByCategory.length > 0 && (
                 <Card className="p-4" delay={0.2}>
                   <h3 className="text-xs font-bold text-navy mb-3">Payments by Category</h3>
-                  <div className="h-48">
+                  <div className="h-48 lg:h-64">
                     <ResponsiveContainer width="100%" height="100%">
                       <RPieChart>
                         <Pie

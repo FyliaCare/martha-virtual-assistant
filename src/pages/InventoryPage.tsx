@@ -192,12 +192,12 @@ export default function InventoryPage() {
   };
 
   return (
-    <div className="pb-4 px-4 max-w-lg mx-auto">
+    <div className="pb-4 px-4 lg:px-8 max-w-lg lg:max-w-5xl mx-auto">
       {/* Header */}
       <div className="pt-6 pb-4">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-xl font-bold text-navy">Inventory</h1>
+            <h1 className="text-xl lg:text-2xl font-bold text-navy">Inventory</h1>
             <p className="text-xs text-text-secondary">{products.length} products tracked</p>
           </div>
           <div className="flex gap-2">
@@ -219,7 +219,7 @@ export default function InventoryPage() {
       </div>
 
       {/* Summary Row */}
-      <div className="grid grid-cols-3 gap-3 mb-6">
+      <div className="grid grid-cols-3 lg:grid-cols-3 gap-3 mb-6">
         <Card className="p-3 text-center" delay={0.05}>
           <p className="text-lg font-bold text-navy">{products.length}</p>
           <p className="text-[9px] text-text-secondary">Products</p>
@@ -266,7 +266,7 @@ export default function InventoryPage() {
           <p className="text-xs text-text-light">Add your first product to start tracking</p>
         </Card>
       ) : (
-        <div className="space-y-2">
+        <div className="space-y-2 lg:grid lg:grid-cols-2 lg:gap-3 lg:space-y-0">
           {products.map((product, i) => {
             const isLow = product.currentStock <= product.reorderLevel;
 

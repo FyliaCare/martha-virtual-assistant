@@ -251,7 +251,7 @@ export default function EntryPage() {
     category === 'merchandise_sale' || category === 'merchandise_purchase';
 
   return (
-    <div className="pb-4 px-4 max-w-lg mx-auto">
+    <div className="pb-4 px-4 lg:px-8 max-w-lg lg:max-w-2xl mx-auto">
       {/* Header with Progress */}
       <div className="pt-6 pb-4">
         <div className="flex items-center gap-3 mb-4">

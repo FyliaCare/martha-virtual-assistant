@@ -228,7 +228,7 @@ export default function SettingsPage() {
   ];
 
   return (
-    <div className="pb-4 px-4 max-w-lg mx-auto">
+    <div className="pb-4 px-4 lg:px-8 max-w-lg lg:max-w-3xl mx-auto">
       {/* Header */}
       <div className="pt-6 pb-4">
         <h1 className="text-xl font-bold text-navy">Settings</h1>
