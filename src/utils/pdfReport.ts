@@ -5,9 +5,8 @@
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import type { ReportData } from './reportData';
-import { fmtAmt, fmtPct } from './reportData';
+import { fmtAmt } from './reportData';
 import { formatDate } from './helpers';
-import { QUARTER_LABELS } from './constants';
 
 // ── Brand colours ──
 const NAVY = [27, 42, 74] as const;
@@ -110,12 +109,12 @@ export function generatePDF(data: ReportData): void {
   y = 68;
 
   // ════════════════════════════════════════════
-  // EXECUTIVE SUMMARY
+  // 1. SUMMARY
   // ════════════════════════════════════════════
   doc.setFontSize(14);
   doc.setFont('helvetica', 'bold');
   setColor(doc, NAVY);
-  doc.text('Executive Summary', 20, y);
+  doc.text('1. Summary', 20, y);
   y += 3;
   drawLine(doc, y, w);
   y += 8;
@@ -151,69 +150,15 @@ export function generatePDF(data: ReportData): void {
 
   y += 40;
 
-  // ── Quarterly comparison ──
-  if (data.advanced.receiptGrowthVsPrevQ !== null) {
-    const prevQ = data.quarter === 1 ? 4 : data.quarter - 1;
-    const prevY = data.quarter === 1 ? data.year - 1 : data.year;
-    doc.setFontSize(10);
-    doc.setFont('helvetica', 'bold');
-    setColor(doc, NAVY);
-    doc.text(`Compared to ${QUARTER_LABELS[prevQ]} ${prevY}`, 20, y);
-    y += 6;
-
-    doc.setFontSize(9);
-    doc.setFont('helvetica', 'normal');
-    setColor(doc, TEXT);
-
-    const rcptGrowth = fmtPct(data.advanced.receiptGrowthVsPrevQ);
-    const pmtGrowth = fmtPct(data.advanced.paymentGrowthVsPrevQ);
-    doc.text(safe(`Receipts: ${fmtAmt(data.advanced.prevQReceipts)} -> ${fmtAmt(data.totalReceipts)}  (${rcptGrowth})`), 25, y);
-    y += 5;
-    doc.text(safe(`Payments: ${fmtAmt(data.advanced.prevQPayments)} -> ${fmtAmt(data.totalPayments)}  (${pmtGrowth})`), 25, y);
-    y += 8;
-  }
-
-  // ── Key metrics ──
-  doc.setFontSize(10);
-  doc.setFont('helvetica', 'bold');
-  setColor(doc, NAVY);
-  doc.text('Key Metrics', 20, y);
-  y += 6;
-
-  const metrics = [
-    ['Average Transaction', pdfAmt(data.advanced.avgTransactionSize)],
-    ['Average Receipt', pdfAmt(data.advanced.avgReceiptSize)],
-    ['Average Payment', pdfAmt(data.advanced.avgPaymentSize)],
-    ['Median Transaction', pdfAmt(data.advanced.medianTransaction)],
-    ['Operating Ratio', `${(data.advanced.operatingRatio * 100).toFixed(1)}%`],
-    ['Busiest Month', data.advanced.busyMonth],
-    ['Quietest Month', data.advanced.quietMonth],
-    ['Financial Status', data.advanced.surplusDeficit === 'surplus' ? 'SURPLUS' : data.advanced.surplusDeficit === 'deficit' ? 'DEFICIT' : 'BALANCED'],
-  ];
-
-  autoTable(doc, {
-    startY: y,
-    head: [['Metric', 'Value']],
-    body: metrics,
-    theme: 'striped',
-    margin: { left: 20, right: 20 },
-    headStyles: { fillColor: [NAVY[0], NAVY[1], NAVY[2]], textColor: [255, 255, 255], fontSize: 9, fontStyle: 'bold' },
-    bodyStyles: { fontSize: 9, textColor: [TEXT[0], TEXT[1], TEXT[2]] },
-    alternateRowStyles: { fillColor: [LIGHT_GRAY[0], LIGHT_GRAY[1], LIGHT_GRAY[2]] },
-    columnStyles: { 0: { fontStyle: 'bold', cellWidth: 60 } },
-  });
-
-  y = (doc as unknown as { lastAutoTable: { finalY: number } }).lastAutoTable.finalY + 10;
-
   // ════════════════════════════════════════════
-  // MONTHLY BREAKDOWN
+  // 2. MONTHLY BREAKDOWN
   // ════════════════════════════════════════════
   if (y > 240) { doc.addPage(); y = 20; }
 
   doc.setFontSize(14);
   doc.setFont('helvetica', 'bold');
   setColor(doc, NAVY);
-  doc.text('Monthly Breakdown', 20, y);
+  doc.text('2. Monthly Breakdown', 20, y);
   y += 3;
   drawLine(doc, y, w);
   y += 6;
@@ -238,14 +183,14 @@ export function generatePDF(data: ReportData): void {
   y = (doc as unknown as { lastAutoTable: { finalY: number } }).lastAutoTable.finalY + 10;
 
   // ════════════════════════════════════════════
-  // RECEIPTS BY CATEGORY
+  // 3. RECEIPTS BY CATEGORY
   // ════════════════════════════════════════════
   if (y > 220) { doc.addPage(); y = 20; }
 
   doc.setFontSize(14);
   doc.setFont('helvetica', 'bold');
   setColor(doc, NAVY);
-  doc.text('Receipts Analysis', 20, y);
+  doc.text('3. Receipts by Category', 20, y);
   y += 3;
   drawLine(doc, y, w);
   y += 6;
@@ -268,30 +213,18 @@ export function generatePDF(data: ReportData): void {
       bodyStyles: { fontSize: 9, textColor: [TEXT[0], TEXT[1], TEXT[2]] },
       alternateRowStyles: { fillColor: [LIGHT_GRAY[0], LIGHT_GRAY[1], LIGHT_GRAY[2]] },
     });
-    y = (doc as unknown as { lastAutoTable: { finalY: number } }).lastAutoTable.finalY + 5;
-  }
-
-  // Notable receipt
-  if (data.advanced.largestReceipt) {
-    doc.setFontSize(9);
-    doc.setFont('helvetica', 'italic');
-    setColor(doc, TEXT_LIGHT);
-    doc.text(
-      safe(`Largest receipt: ${fmtAmt(data.advanced.largestReceipt.amount)} -- ${data.advanced.largestReceipt.description} (${formatDate(data.advanced.largestReceipt.date)})`),
-      25, y + 2
-    );
-    y += 10;
+    y = (doc as unknown as { lastAutoTable: { finalY: number } }).lastAutoTable.finalY + 10;
   }
 
   // ════════════════════════════════════════════
-  // PAYMENTS BY CATEGORY
+  // 4. PAYMENTS BY CATEGORY
   // ════════════════════════════════════════════
   if (y > 220) { doc.addPage(); y = 20; }
 
   doc.setFontSize(14);
   doc.setFont('helvetica', 'bold');
   setColor(doc, NAVY);
-  doc.text('Payments Analysis', 20, y);
+  doc.text('4. Payments by Category', 20, y);
   y += 3;
   drawLine(doc, y, w);
   y += 6;
@@ -314,22 +247,11 @@ export function generatePDF(data: ReportData): void {
       bodyStyles: { fontSize: 9, textColor: [TEXT[0], TEXT[1], TEXT[2]] },
       alternateRowStyles: { fillColor: [LIGHT_GRAY[0], LIGHT_GRAY[1], LIGHT_GRAY[2]] },
     });
-    y = (doc as unknown as { lastAutoTable: { finalY: number } }).lastAutoTable.finalY + 5;
-  }
-
-  if (data.advanced.largestPayment) {
-    doc.setFontSize(9);
-    doc.setFont('helvetica', 'italic');
-    setColor(doc, TEXT_LIGHT);
-    doc.text(
-      safe(`Largest payment: ${fmtAmt(data.advanced.largestPayment.amount)} -- ${data.advanced.largestPayment.description} (${formatDate(data.advanced.largestPayment.date)})`),
-      25, y + 2
-    );
-    y += 10;
+    y = (doc as unknown as { lastAutoTable: { finalY: number } }).lastAutoTable.finalY + 10;
   }
 
   // ════════════════════════════════════════════
-  // CIRCUIT ANALYSIS
+  // 5. CIRCUIT PERFORMANCE
   // ════════════════════════════════════════════
   if (data.circuitBreakdown.length > 0) {
     if (y > 220) { doc.addPage(); y = 20; }
@@ -337,7 +259,7 @@ export function generatePDF(data: ReportData): void {
     doc.setFontSize(14);
     doc.setFont('helvetica', 'bold');
     setColor(doc, NAVY);
-    doc.text('Circuit Performance', 20, y);
+    doc.text('5. Circuit Performance', 20, y);
     y += 3;
     drawLine(doc, y, w);
     y += 6;
@@ -362,7 +284,7 @@ export function generatePDF(data: ReportData): void {
   }
 
   // ════════════════════════════════════════════
-  // DETAILED TRANSACTION LEDGER
+  // 6. TRANSACTION LEDGER
   // ════════════════════════════════════════════
   doc.addPage();
   y = 20;
@@ -370,7 +292,7 @@ export function generatePDF(data: ReportData): void {
   doc.setFontSize(14);
   doc.setFont('helvetica', 'bold');
   setColor(doc, NAVY);
-  doc.text('Transaction Ledger — Receipts', 20, y);
+  doc.text('6. Transaction Ledger — Receipts', 20, y);
   y += 3;
   drawLine(doc, y, w);
   y += 6;
@@ -401,7 +323,7 @@ export function generatePDF(data: ReportData): void {
   doc.setFontSize(14);
   doc.setFont('helvetica', 'bold');
   setColor(doc, NAVY);
-  doc.text('Transaction Ledger — Payments', 20, y);
+  doc.text('6. Transaction Ledger — Payments', 20, y);
   y += 3;
   drawLine(doc, y, w);
   y += 6;

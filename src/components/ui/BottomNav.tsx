@@ -4,14 +4,14 @@
 
 import { useLocation, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Home, PenLine, BarChart3, Package, User } from 'lucide-react';
+import { Home, PenLine, BarChart3, Package, ClipboardEdit } from 'lucide-react';
 
 const NAV_ITEMS = [
   { path: '/', label: 'Home', icon: Home },
   { path: '/entry', label: 'Enter', icon: PenLine },
   { path: '/reports', label: 'Reports', icon: BarChart3 },
+  { path: '/edit-data', label: 'Edit Data', icon: ClipboardEdit },
   { path: '/inventory', label: 'Stock', icon: Package },
-  { path: '/circuits', label: 'Circuits', icon: User },
 ];
 
 export default function BottomNav() {

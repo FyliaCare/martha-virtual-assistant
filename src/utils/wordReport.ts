@@ -21,9 +21,8 @@ import {
 } from 'docx';
 import { saveAs } from 'file-saver';
 import type { ReportData } from './reportData';
-import { fmtAmt, fmtPct } from './reportData';
+import { fmtAmt } from './reportData';
 import { formatDate } from './helpers';
-import { QUARTER_LABELS } from './constants';
 
 // ── Brand hex colours ──
 const NAVY = '1B2A4A';
@@ -56,22 +55,6 @@ function goldRule(): Paragraph {
 
 function emptyLine(): Paragraph {
   return new Paragraph({ spacing: { after: 80 }, children: [] });
-}
-
-function textParagraph(text: string, opts?: { bold?: boolean; italic?: boolean; color?: string; size?: number }): Paragraph {
-  return new Paragraph({
-    spacing: { after: 60 },
-    children: [
-      new TextRun({
-        text,
-        bold: opts?.bold,
-        italics: opts?.italic,
-        color: opts?.color || '374151',
-        size: opts?.size || 20,
-        font: 'Calibri',
-      }),
-    ],
-  });
 }
 
 function tableCell(text: string, opts?: { bold?: boolean; color?: string; bgColor?: string; align?: (typeof AlignmentType)[keyof typeof AlignmentType] }): TableCell {
@@ -163,9 +146,9 @@ export async function generateWord(data: ReportData): Promise<void> {
   );
 
   // ════════════════════════════════════════════
-  // EXECUTIVE SUMMARY
+  // 1. SUMMARY
   // ════════════════════════════════════════════
-  children.push(heading('Executive Summary'), goldRule());
+  children.push(heading('1. Summary'), goldRule());
 
   children.push(
     new Table({
@@ -197,45 +180,10 @@ export async function generateWord(data: ReportData): Promise<void> {
   );
   children.push(emptyLine());
 
-  // ── Quarterly comparison ──
-  if (data.advanced.receiptGrowthVsPrevQ !== null) {
-    const prevQ = data.quarter === 1 ? 4 : data.quarter - 1;
-    const prevY = data.quarter === 1 ? data.year - 1 : data.year;
-    children.push(
-      heading(`Comparison with ${QUARTER_LABELS[prevQ]} ${prevY}`, HeadingLevel.HEADING_2),
-      textParagraph(
-        `Receipts: ${fmtAmt(data.advanced.prevQReceipts)} → ${fmtAmt(data.totalReceipts)}  (${fmtPct(data.advanced.receiptGrowthVsPrevQ)})`
-      ),
-      textParagraph(
-        `Payments: ${fmtAmt(data.advanced.prevQPayments)} → ${fmtAmt(data.totalPayments)}  (${fmtPct(data.advanced.paymentGrowthVsPrevQ)})`
-      ),
-      emptyLine()
-    );
-  }
-
-  // ── Key Metrics ──
-  children.push(heading('Key Metrics', HeadingLevel.HEADING_2));
-  children.push(
-    buildTable(
-      ['Metric', 'Value'],
-      [
-        ['Average Transaction', fmtAmt(data.advanced.avgTransactionSize)],
-        ['Average Receipt', fmtAmt(data.advanced.avgReceiptSize)],
-        ['Average Payment', fmtAmt(data.advanced.avgPaymentSize)],
-        ['Median Transaction', fmtAmt(data.advanced.medianTransaction)],
-        ['Operating Ratio', `${(data.advanced.operatingRatio * 100).toFixed(1)}%`],
-        ['Busiest Month', data.advanced.busyMonth],
-        ['Quietest Month', data.advanced.quietMonth],
-        ['Financial Status', data.advanced.surplusDeficit === 'surplus' ? 'SURPLUS' : data.advanced.surplusDeficit === 'deficit' ? 'DEFICIT' : 'BALANCED'],
-      ]
-    )
-  );
-  children.push(emptyLine());
-
   // ════════════════════════════════════════════
-  // MONTHLY BREAKDOWN
+  // 2. MONTHLY BREAKDOWN
   // ════════════════════════════════════════════
-  children.push(heading('Monthly Breakdown'), goldRule());
+  children.push(heading('2. Monthly Breakdown'), goldRule());
   children.push(
     buildTable(
       ['Month', 'Receipts', 'Payments', 'Net', 'Transactions'],
@@ -251,9 +199,9 @@ export async function generateWord(data: ReportData): Promise<void> {
   children.push(emptyLine());
 
   // ════════════════════════════════════════════
-  // RECEIPTS ANALYSIS
+  // 3. RECEIPTS
   // ════════════════════════════════════════════
-  children.push(heading('Receipts Analysis'), goldRule());
+  children.push(heading('3. Receipts by Category'), goldRule());
   if (data.receiptsByCategory.length > 0) {
     children.push(
       buildTable(
@@ -271,20 +219,12 @@ export async function generateWord(data: ReportData): Promise<void> {
       )
     );
   }
-  if (data.advanced.largestReceipt) {
-    children.push(
-      textParagraph(
-        `Largest receipt: ${fmtAmt(data.advanced.largestReceipt.amount)} — ${data.advanced.largestReceipt.description} (${formatDate(data.advanced.largestReceipt.date)})`,
-        { italic: true, color: '6B7280' }
-      )
-    );
-  }
   children.push(emptyLine());
 
   // ════════════════════════════════════════════
-  // PAYMENTS ANALYSIS
+  // 4. PAYMENTS
   // ════════════════════════════════════════════
-  children.push(heading('Payments Analysis'), goldRule());
+  children.push(heading('4. Payments by Category'), goldRule());
   if (data.paymentsByCategory.length > 0) {
     children.push(
       buildTable(
@@ -302,21 +242,13 @@ export async function generateWord(data: ReportData): Promise<void> {
       )
     );
   }
-  if (data.advanced.largestPayment) {
-    children.push(
-      textParagraph(
-        `Largest payment: ${fmtAmt(data.advanced.largestPayment.amount)} — ${data.advanced.largestPayment.description} (${formatDate(data.advanced.largestPayment.date)})`,
-        { italic: true, color: '6B7280' }
-      )
-    );
-  }
   children.push(emptyLine());
 
   // ════════════════════════════════════════════
-  // CIRCUIT PERFORMANCE
+  // 5. CIRCUIT PERFORMANCE
   // ════════════════════════════════════════════
   if (data.circuitBreakdown.length > 0) {
-    children.push(heading('Circuit Performance'), goldRule());
+    children.push(heading('5. Circuit Performance'), goldRule());
     children.push(
       buildTable(
         ['Circuit', 'Receipts', 'Payments', 'Net', 'Transactions'],
@@ -333,9 +265,9 @@ export async function generateWord(data: ReportData): Promise<void> {
   }
 
   // ════════════════════════════════════════════
-  // TRANSACTION LEDGER
+  // 6. TRANSACTION LEDGER
   // ════════════════════════════════════════════
-  children.push(heading('Transaction Ledger — Receipts'), goldRule());
+  children.push(heading('6. Transaction Ledger — Receipts'), goldRule());
   if (data.allReceipts.length > 0) {
     children.push(
       buildTable(
@@ -352,7 +284,7 @@ export async function generateWord(data: ReportData): Promise<void> {
   }
   children.push(emptyLine());
 
-  children.push(heading('Transaction Ledger — Payments'), goldRule());
+  children.push(heading('6. Transaction Ledger — Payments', HeadingLevel.HEADING_2), goldRule());
   if (data.allPayments.length > 0) {
     children.push(
       buildTable(

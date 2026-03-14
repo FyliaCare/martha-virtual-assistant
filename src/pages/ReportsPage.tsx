@@ -1,5 +1,5 @@
 // ============================================================
-// Reports Page — Professional analytics, advanced stats, PDF/Word export
+// Reports Page — Quarterly financial reports, PDF/Word export
 // ============================================================
 
 import { useEffect, useState, useMemo } from 'react';
@@ -12,13 +12,6 @@ import {
   Filter,
   FileText,
   FileType2,
-  TrendingUp,
-  TrendingDown,
-  Minus,
-  Activity,
-  Target,
-  Calendar,
-  Zap,
   BookOpen,
 } from 'lucide-react';
 import {
@@ -41,9 +34,9 @@ import MarthaAssistant from '../components/martha/MarthaAssistant';
 import { useTransactionStore } from '../store/useTransactionStore';
 import { useCircuitStore } from '../store/useCircuitStore';
 import { useMarthaStore } from '../store/useMarthaStore';
-import { formatCurrency, formatCurrencyShort, getCurrentQuarter, getCurrentYear, formatDate } from '../utils/helpers';
+import { formatCurrency, formatCurrencyShort, getCurrentQuarter, getCurrentYear } from '../utils/helpers';
 import { QUARTER_LABELS, ALL_CATEGORIES } from '../utils/constants';
-import { buildReportData, fmtPct } from '../utils/reportData';
+import { buildReportData } from '../utils/reportData';
 import { generatePDF } from '../utils/pdfReport';
 import { generateWord } from '../utils/wordReport';
 import type { Quarter } from '../types';
@@ -60,7 +53,7 @@ export default function ReportsPage() {
 
   const [selectedQuarter, setSelectedQuarter] = useState<Quarter>(getCurrentQuarter());
   const [selectedYear, setSelectedYear] = useState(getCurrentYear());
-  const [activeTab, setActiveTab] = useState<'overview' | 'receipts' | 'payments' | 'advanced'>('overview');
+  const [activeTab, setActiveTab] = useState<'overview' | 'receipts' | 'payments'>('overview');
   const [isGeneratingPDF, setIsGeneratingPDF] = useState(false);
   const [isGeneratingWord, setIsGeneratingWord] = useState(false);
   const [showExportMenu, setShowExportMenu] = useState(false);
@@ -103,7 +96,7 @@ export default function ReportsPage() {
   const totalPayments = payments.reduce((s, t) => s + t.amount, 0);
   const balance = totalReceipts - totalPayments;
 
-  // Full report data (used for advanced stats and export)
+  // Full report data (used for export)
   const reportData = useMemo(
     () => buildReportData(transactions, circuits, selectedQuarter, selectedYear),
     [transactions, circuits, selectedQuarter, selectedYear]
@@ -231,13 +224,10 @@ export default function ReportsPage() {
     }
   };
 
-  const adv = reportData.advanced;
-
   const tabs = [
     { key: 'overview' as const, label: 'Overview' },
     { key: 'receipts' as const, label: 'Receipts' },
     { key: 'payments' as const, label: 'Payments' },
-    { key: 'advanced' as const, label: 'Analytics' },
   ];
 
   return (
@@ -393,18 +383,6 @@ export default function ReportsPage() {
         <p className={`text-2xl font-bold font-mono ${balance >= 0 ? 'text-success' : 'text-alert'}`}>
           {balance >= 0 ? '+' : ''}{formatCurrency(balance)}
         </p>
-        {adv.receiptGrowthVsPrevQ !== null && (
-          <div className="mt-2 flex items-center justify-center gap-3">
-            <span className="inline-flex items-center gap-1 text-[10px] font-medium px-2 py-0.5 rounded-full bg-success/10 text-success">
-              {adv.receiptGrowthVsPrevQ >= 0 ? <TrendingUp size={10} /> : <TrendingDown size={10} />}
-              Receipts {fmtPct(adv.receiptGrowthVsPrevQ)}
-            </span>
-            <span className="inline-flex items-center gap-1 text-[10px] font-medium px-2 py-0.5 rounded-full bg-alert/10 text-alert">
-              {(adv.paymentGrowthVsPrevQ ?? 0) >= 0 ? <TrendingUp size={10} /> : <TrendingDown size={10} />}
-              Payments {fmtPct(adv.paymentGrowthVsPrevQ)}
-            </span>
-          </div>
-        )}
       </Card>
 
       {filteredTxns.length === 0 ? (
@@ -574,220 +552,6 @@ export default function ReportsPage() {
                       <span className="text-xs font-bold font-mono text-alert">-{formatCurrency(txn.amount)}</span>
                     </div>
                   ))}
-                </div>
-              </Card>
-            </div>
-          )}
-
-          {/* ═══════════ ADVANCED ANALYTICS TAB ═══════════ */}
-          {activeTab === 'advanced' && (
-            <div className="space-y-4">
-              {/* Financial Health Indicator */}
-              <Card className="p-4" delay={0.2}>
-                <div className="flex items-center gap-2 mb-3">
-                  <Activity size={14} className="text-navy" />
-                  <h3 className="text-xs font-bold text-navy">Financial Health</h3>
-                </div>
-                <div className="flex items-center justify-center py-2">
-                  <div className={`
-                    inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-bold
-                    ${adv.surplusDeficit === 'surplus' ? 'bg-success/10 text-success' : ''}
-                    ${adv.surplusDeficit === 'deficit' ? 'bg-alert/10 text-alert' : ''}
-                    ${adv.surplusDeficit === 'balanced' ? 'bg-gold/10 text-gold-dark' : ''}
-                  `}>
-                    {adv.surplusDeficit === 'surplus' && <TrendingUp size={16} />}
-                    {adv.surplusDeficit === 'deficit' && <TrendingDown size={16} />}
-                    {adv.surplusDeficit === 'balanced' && <Minus size={16} />}
-                    {adv.surplusDeficit.toUpperCase()}
-                  </div>
-                </div>
-                <div className="mt-3 grid grid-cols-2 gap-3">
-                  <div className="text-center p-2 bg-gray-50 rounded-xl">
-                    <p className="text-[10px] text-text-secondary">Operating Ratio</p>
-                    <p className="text-sm font-bold text-navy font-mono">
-                      {(adv.operatingRatio * 100).toFixed(1)}%
-                    </p>
-                    <p className="text-[9px] text-text-light">Payments / Receipts</p>
-                  </div>
-                  <div className="text-center p-2 bg-gray-50 rounded-xl">
-                    <p className="text-[10px] text-text-secondary">Median Transaction</p>
-                    <p className="text-sm font-bold text-navy font-mono">
-                      {formatCurrency(adv.medianTransaction)}
-                    </p>
-                  </div>
-                </div>
-              </Card>
-
-              {/* Averages */}
-              <Card className="p-4" delay={0.25}>
-                <div className="flex items-center gap-2 mb-3">
-                  <Target size={14} className="text-navy" />
-                  <h3 className="text-xs font-bold text-navy">Transaction Averages</h3>
-                </div>
-                <div className="space-y-3">
-                  <div className="flex items-center justify-between">
-                    <span className="text-xs text-text-secondary">Average Transaction</span>
-                    <span className="text-xs font-bold text-navy font-mono">{formatCurrency(adv.avgTransactionSize)}</span>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-xs text-text-secondary">Average Receipt</span>
-                    <span className="text-xs font-bold text-success font-mono">{formatCurrency(adv.avgReceiptSize)}</span>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-xs text-text-secondary">Average Payment</span>
-                    <span className="text-xs font-bold text-alert font-mono">{formatCurrency(adv.avgPaymentSize)}</span>
-                  </div>
-                </div>
-              </Card>
-
-              {/* Quarter-over-Quarter */}
-              {adv.receiptGrowthVsPrevQ !== null && (
-                <Card className="p-4" delay={0.3}>
-                  <div className="flex items-center gap-2 mb-3">
-                    <Zap size={14} className="text-navy" />
-                    <h3 className="text-xs font-bold text-navy">vs Previous Quarter</h3>
-                  </div>
-                  <div className="space-y-3">
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-2">
-                        <div className="w-2 h-2 rounded-full bg-success" />
-                        <span className="text-xs text-text-secondary">Receipts</span>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <span className="text-[10px] text-text-light font-mono">
-                          {formatCurrency(adv.prevQReceipts)} → {formatCurrency(totalReceipts)}
-                        </span>
-                        <span className={`text-xs font-bold font-mono ${adv.receiptGrowthVsPrevQ >= 0 ? 'text-success' : 'text-alert'}`}>
-                          {fmtPct(adv.receiptGrowthVsPrevQ)}
-                        </span>
-                      </div>
-                    </div>
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-2">
-                        <div className="w-2 h-2 rounded-full bg-alert" />
-                        <span className="text-xs text-text-secondary">Payments</span>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <span className="text-[10px] text-text-light font-mono">
-                          {formatCurrency(adv.prevQPayments)} → {formatCurrency(totalPayments)}
-                        </span>
-                        <span className={`text-xs font-bold font-mono ${(adv.paymentGrowthVsPrevQ ?? 0) <= 0 ? 'text-success' : 'text-alert'}`}>
-                          {fmtPct(adv.paymentGrowthVsPrevQ)}
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-                </Card>
-              )}
-
-              {/* Top Categories */}
-              <Card className="p-4" delay={0.35}>
-                <div className="flex items-center gap-2 mb-3">
-                  <Calendar size={14} className="text-navy" />
-                  <h3 className="text-xs font-bold text-navy">Top Income Sources</h3>
-                </div>
-                <div className="space-y-2">
-                  {adv.topReceiptCategories.map((cat, i) => (
-                    <div key={cat.category} className="flex items-center gap-2">
-                      <span className="w-5 h-5 rounded-md bg-navy/5 flex items-center justify-center text-[10px] font-bold text-navy">
-                        {i + 1}
-                      </span>
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-center justify-between">
-                          <span className="text-xs font-medium text-text-primary truncate">{cat.label}</span>
-                          <span className="text-xs font-bold text-success font-mono ml-2">{formatCurrency(cat.amount)}</span>
-                        </div>
-                        <div className="mt-1 h-1.5 bg-gray-100 rounded-full overflow-hidden">
-                          <div
-                            className="h-full bg-success rounded-full transition-all"
-                            style={{ width: `${cat.percentage}%` }}
-                          />
-                        </div>
-                      </div>
-                      <span className="text-[10px] text-text-light font-mono w-10 text-right">{cat.percentage.toFixed(0)}%</span>
-                    </div>
-                  ))}
-                </div>
-              </Card>
-
-              <Card className="p-4" delay={0.4}>
-                <div className="flex items-center gap-2 mb-3">
-                  <Calendar size={14} className="text-navy" />
-                  <h3 className="text-xs font-bold text-navy">Top Expense Categories</h3>
-                </div>
-                <div className="space-y-2">
-                  {adv.topPaymentCategories.map((cat, i) => (
-                    <div key={cat.category} className="flex items-center gap-2">
-                      <span className="w-5 h-5 rounded-md bg-navy/5 flex items-center justify-center text-[10px] font-bold text-navy">
-                        {i + 1}
-                      </span>
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-center justify-between">
-                          <span className="text-xs font-medium text-text-primary truncate">{cat.label}</span>
-                          <span className="text-xs font-bold text-alert font-mono ml-2">{formatCurrency(cat.amount)}</span>
-                        </div>
-                        <div className="mt-1 h-1.5 bg-gray-100 rounded-full overflow-hidden">
-                          <div
-                            className="h-full bg-alert rounded-full transition-all"
-                            style={{ width: `${cat.percentage}%` }}
-                          />
-                        </div>
-                      </div>
-                      <span className="text-[10px] text-text-light font-mono w-10 text-right">{cat.percentage.toFixed(0)}%</span>
-                    </div>
-                  ))}
-                </div>
-              </Card>
-
-              {/* Notable Transactions */}
-              <Card className="p-4" delay={0.45}>
-                <h3 className="text-xs font-bold text-navy mb-3">Notable Transactions</h3>
-                <div className="space-y-3">
-                  {adv.largestReceipt && (
-                    <div className="p-3 bg-success/5 rounded-xl border border-success/20">
-                      <p className="text-[10px] text-success font-semibold uppercase tracking-wider mb-1">Largest Receipt</p>
-                      <p className="text-sm font-bold text-success font-mono">{formatCurrency(adv.largestReceipt.amount)}</p>
-                      <p className="text-xs text-text-primary mt-1">{adv.largestReceipt.description}</p>
-                      <p className="text-[10px] text-text-secondary">{formatDate(adv.largestReceipt.date)}</p>
-                    </div>
-                  )}
-                  {adv.largestPayment && (
-                    <div className="p-3 bg-alert/5 rounded-xl border border-alert/20">
-                      <p className="text-[10px] text-alert font-semibold uppercase tracking-wider mb-1">Largest Payment</p>
-                      <p className="text-sm font-bold text-alert font-mono">{formatCurrency(adv.largestPayment.amount)}</p>
-                      <p className="text-xs text-text-primary mt-1">{adv.largestPayment.description}</p>
-                      <p className="text-[10px] text-text-secondary">{formatDate(adv.largestPayment.date)}</p>
-                    </div>
-                  )}
-                </div>
-              </Card>
-
-              {/* Activity Summary */}
-              <Card className="p-4" delay={0.5}>
-                <h3 className="text-xs font-bold text-navy mb-3">Activity Summary</h3>
-                <div className="grid grid-cols-3 gap-3 text-center">
-                  <div className="p-2 bg-gray-50 rounded-xl">
-                    <p className="text-lg font-bold text-navy">{reportData.totalTransactions}</p>
-                    <p className="text-[10px] text-text-secondary">Total Txns</p>
-                  </div>
-                  <div className="p-2 bg-gray-50 rounded-xl">
-                    <p className="text-lg font-bold text-success">{reportData.receiptCount}</p>
-                    <p className="text-[10px] text-text-secondary">Receipts</p>
-                  </div>
-                  <div className="p-2 bg-gray-50 rounded-xl">
-                    <p className="text-lg font-bold text-alert">{reportData.paymentCount}</p>
-                    <p className="text-[10px] text-text-secondary">Payments</p>
-                  </div>
-                </div>
-                <div className="mt-3 grid grid-cols-2 gap-3 text-center">
-                  <div className="p-2 bg-success/5 rounded-xl">
-                    <p className="text-[10px] text-text-secondary">Busiest Month</p>
-                    <p className="text-xs font-bold text-navy">{adv.busyMonth}</p>
-                  </div>
-                  <div className="p-2 bg-gold/5 rounded-xl">
-                    <p className="text-[10px] text-text-secondary">Quietest Month</p>
-                    <p className="text-xs font-bold text-navy">{adv.quietMonth}</p>
-                  </div>
                 </div>
               </Card>
             </div>
