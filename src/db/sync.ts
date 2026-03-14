@@ -53,9 +53,9 @@ export async function deleteDocFromCloud(collectionName: string, uid: string) {
 
 // ── Batch push (used after initial seed) ──
 
-async function batchPush(
+async function batchPush<T extends { uid: string; id?: number }>(
   collectionName: string,
-  records: Array<{ uid: string; id?: number; [k: string]: unknown }>,
+  records: T[],
 ) {
   if (records.length === 0) return;
 

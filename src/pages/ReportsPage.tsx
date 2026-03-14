@@ -231,13 +231,13 @@ export default function ReportsPage() {
   ];
 
   return (
-    <div className="pb-4 px-4 lg:px-8 max-w-lg lg:max-w-5xl mx-auto">
+    <div className="pb-4 px-4 lg:px-10 lg:py-6 max-w-lg lg:max-w-7xl mx-auto">
       {/* Header */}
-      <div className="pt-6 pb-4">
+      <div className="pt-6 pb-4 lg:pt-0 lg:pb-6">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-xl lg:text-2xl font-bold text-navy">Reports</h1>
-            <p className="text-xs text-text-secondary">Financial Analytics</p>
+            <h1 className="text-xl lg:text-3xl font-bold text-navy">Reports</h1>
+            <p className="text-xs lg:text-sm text-text-secondary">Financial Analytics</p>
           </div>
           <div className="relative">
             <Button
@@ -307,8 +307,8 @@ export default function ReportsPage() {
         </div>
       </div>
 
-      {/* Martha */}
-      <div className="mb-4">
+      {/* Martha — mobile only */}
+      <div className="mb-4 lg:hidden">
         <MarthaAssistant size="sm" layout="horizontal" />
       </div>
 
@@ -362,7 +362,7 @@ export default function ReportsPage() {
       </Card>
 
       {/* Summary Cards */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-4">
+      <div className="grid grid-cols-2 lg:grid-cols-3 gap-3 mb-4">
         <SummaryCard
           label="Receipts"
           value={formatCurrency(totalReceipts)}
@@ -377,13 +377,14 @@ export default function ReportsPage() {
           color="alert"
           delay={0.1}
         />
+        <SummaryCard
+          label="Net Balance"
+          value={`${balance >= 0 ? '+' : ''}${formatCurrency(balance)}`}
+          icon={<BarChart3 size={16} />}
+          color={balance >= 0 ? 'success' : 'alert'}
+          delay={0.15}
+        />
       </div>
-      <Card className="p-4 mb-6 text-center" delay={0.15}>
-        <p className="text-xs text-text-secondary mb-1">Net Balance</p>
-        <p className={`text-2xl font-bold font-mono ${balance >= 0 ? 'text-success' : 'text-alert'}`}>
-          {balance >= 0 ? '+' : ''}{formatCurrency(balance)}
-        </p>
-      </Card>
 
       {filteredTxns.length === 0 ? (
         <Card className="p-8 text-center">
@@ -396,12 +397,12 @@ export default function ReportsPage() {
       ) : (
         <>
           {/* Tabs */}
-          <div className="flex gap-1 p-1 bg-gray-100 rounded-xl mb-4">
+          <div className="flex gap-1 p-1 bg-gray-100 rounded-xl mb-4 lg:max-w-md">
             {tabs.map((tab) => (
               <button
                 key={tab.key}
                 onClick={() => setActiveTab(tab.key)}
-                className={`flex-1 py-2 text-[11px] font-semibold rounded-lg transition-all ${
+                className={`flex-1 py-2 lg:py-2.5 text-[11px] lg:text-sm font-semibold rounded-lg transition-all ${
                   activeTab === tab.key
                     ? 'bg-white text-navy shadow-sm'
                     : 'text-text-secondary'
@@ -414,10 +415,10 @@ export default function ReportsPage() {
 
           {/* ═══════════ OVERVIEW TAB ═══════════ */}
           {activeTab === 'overview' && (
-            <div className="space-y-4">
+            <div className="space-y-4 lg:grid lg:grid-cols-2 lg:gap-6 lg:space-y-0">
               <Card className="p-4" delay={0.2}>
-                <h3 className="text-xs font-bold text-navy mb-3">Monthly Breakdown</h3>
-                <div className="h-48 lg:h-72">
+                  <h3 className="text-xs lg:text-sm font-bold text-navy mb-3">Monthly Breakdown</h3>
+                <div className="h-48 lg:h-80">
                   <ResponsiveContainer width="100%" height="100%">
                     <BarChart data={monthlyData} barGap={4}>
                       <CartesianGrid strokeDasharray="3 3" stroke="#E5E7EB" vertical={false} />
@@ -436,7 +437,7 @@ export default function ReportsPage() {
 
               {circuitBreakdown.length > 0 && (
                 <Card className="p-4" delay={0.25}>
-                  <h3 className="text-xs font-bold text-navy mb-3">By Circuit</h3>
+                  <h3 className="text-xs lg:text-sm font-bold text-navy mb-3">By Circuit</h3>
                   <div className="space-y-2">
                     {circuitBreakdown.map((cb) => (
                       <div key={cb.name} className="flex items-center justify-between py-2 border-b border-border/30 last:border-0">
@@ -455,11 +456,11 @@ export default function ReportsPage() {
 
           {/* ═══════════ RECEIPTS TAB ═══════════ */}
           {activeTab === 'receipts' && (
-            <div className="space-y-4">
+            <div className="space-y-4 lg:grid lg:grid-cols-2 lg:gap-6 lg:space-y-0">
               {receiptsByCategory.length > 0 && (
                 <Card className="p-4" delay={0.2}>
-                  <h3 className="text-xs font-bold text-navy mb-3">Receipts by Category</h3>
-                  <div className="h-48 lg:h-64">
+                  <h3 className="text-xs lg:text-sm font-bold text-navy mb-3">Receipts by Category</h3>
+                  <div className="h-48 lg:h-80">
                     <ResponsiveContainer width="100%" height="100%">
                       <RPieChart>
                         <Pie
@@ -485,7 +486,7 @@ export default function ReportsPage() {
               )}
 
               <Card className="p-4" delay={0.25}>
-                <h3 className="text-xs font-bold text-navy mb-3">All Receipts</h3>
+                <h3 className="text-xs lg:text-sm font-bold text-navy mb-3">All Receipts</h3>
                 <div className="space-y-2">
                   {receipts
                     .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
@@ -507,11 +508,11 @@ export default function ReportsPage() {
 
           {/* ═══════════ PAYMENTS TAB ═══════════ */}
           {activeTab === 'payments' && (
-            <div className="space-y-4">
+            <div className="space-y-4 lg:grid lg:grid-cols-2 lg:gap-6 lg:space-y-0">
               {paymentsByCategory.length > 0 && (
                 <Card className="p-4" delay={0.2}>
-                  <h3 className="text-xs font-bold text-navy mb-3">Payments by Category</h3>
-                  <div className="h-48 lg:h-64">
+                  <h3 className="text-xs lg:text-sm font-bold text-navy mb-3">Payments by Category</h3>
+                  <div className="h-48 lg:h-80">
                     <ResponsiveContainer width="100%" height="100%">
                       <RPieChart>
                         <Pie
@@ -537,7 +538,7 @@ export default function ReportsPage() {
               )}
 
               <Card className="p-4" delay={0.25}>
-                <h3 className="text-xs font-bold text-navy mb-3">All Payments</h3>
+                <h3 className="text-xs lg:text-sm font-bold text-navy mb-3">All Payments</h3>
                 <div className="space-y-2">
                   {payments
                     .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())

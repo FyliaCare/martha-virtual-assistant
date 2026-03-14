@@ -315,7 +315,7 @@ export default function ComprehensiveReportPage() {
   }
 
   return (
-    <div className="pb-24 px-4 max-w-2xl mx-auto print:max-w-none print:px-8">
+    <div className="pb-24 px-4 lg:px-10 lg:py-6 max-w-2xl lg:max-w-7xl mx-auto print:max-w-none print:px-8">
       {/* ═══════════════════════ HEADER ═══════════════════════ */}
       <div className="pt-6 pb-4 print:pt-4">
         <div className="flex items-center justify-between mb-4 print:hidden">

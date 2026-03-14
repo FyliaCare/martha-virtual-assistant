@@ -228,22 +228,23 @@ export default function SettingsPage() {
   ];
 
   return (
-    <div className="pb-4 px-4 lg:px-8 max-w-lg lg:max-w-3xl mx-auto">
+    <div className="pb-4 px-4 lg:px-10 lg:py-6 max-w-lg lg:max-w-4xl mx-auto">
       {/* Header */}
-      <div className="pt-6 pb-4">
-        <h1 className="text-xl font-bold text-navy">Settings</h1>
-        <p className="text-xs text-text-secondary">Manage your data and preferences</p>
+      <div className="pt-6 pb-4 lg:pt-0 lg:pb-6">
+        <h1 className="text-xl lg:text-3xl font-bold text-navy">Settings</h1>
+        <p className="text-xs lg:text-sm text-text-secondary">Manage your data and preferences</p>
       </div>
 
-      {/* Martha */}
-      <div className="mb-6">
+      {/* Martha — mobile only */}
+      <div className="mb-6 lg:hidden">
         <MarthaAssistant size="sm" layout="horizontal" />
       </div>
 
       {/* Settings Sections */}
+      <div className="lg:grid lg:grid-cols-2 lg:gap-6">
       {settingsSections.map((section) => (
         <div key={section.title} className="mb-6">
-          <h2 className="text-xs font-bold text-text-secondary uppercase tracking-wider mb-2 px-1">
+          <h2 className="text-xs lg:text-sm font-bold text-text-secondary uppercase tracking-wider mb-2 px-1">
             {section.title}
           </h2>
           <Card>
@@ -253,20 +254,20 @@ export default function SettingsPage() {
                 whileTap={{ scale: 0.99 }}
                 onClick={item.action}
                 disabled={item.loading}
-                className={`w-full flex items-center gap-3 p-4 transition-colors ${
+                className={`w-full flex items-center gap-3 p-4 lg:p-5 transition-colors hover:bg-cream/50 ${
                   ii < section.items.length - 1 ? 'border-b border-border/30' : ''
                 } ${item.danger ? 'text-alert' : 'text-text-primary'}`}
               >
                 <div
-                  className={`w-9 h-9 rounded-xl flex items-center justify-center ${
+                  className={`w-9 h-9 lg:w-11 lg:h-11 rounded-xl flex items-center justify-center ${
                     item.danger ? 'bg-alert/10' : 'bg-navy/5'
                   }`}
                 >
                   <item.icon size={16} className={item.danger ? 'text-alert' : 'text-navy'} />
                 </div>
                 <div className="flex-1 text-left">
-                  <p className="text-sm font-medium">{item.label}</p>
-                  <p className="text-[10px] text-text-secondary">{item.description}</p>
+                  <p className="text-sm lg:text-base font-medium">{item.label}</p>
+                  <p className="text-[10px] lg:text-xs text-text-secondary">{item.description}</p>
                 </div>
                 {item.loading && (
                   <div className="w-4 h-4 border-2 border-navy/20 border-t-navy rounded-full animate-spin" />
@@ -276,6 +277,7 @@ export default function SettingsPage() {
           </Card>
         </div>
       ))}
+      </div>
 
       {/* App Version */}
       <div className="text-center py-4">

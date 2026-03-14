@@ -114,13 +114,13 @@ export default function CircuitsPage() {
   };
 
   return (
-    <div className="pb-4 px-4 lg:px-8 max-w-lg lg:max-w-5xl mx-auto">
+    <div className="pb-4 px-4 lg:px-10 lg:py-6 max-w-lg lg:max-w-7xl mx-auto">
       {/* Header */}
-      <div className="pt-6 pb-4">
+      <div className="pt-6 pb-4 lg:pt-0 lg:pb-6">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-xl font-bold text-navy">Circuits</h1>
-            <p className="text-xs text-text-secondary">{circuits.length} registered circuits</p>
+            <h1 className="text-xl lg:text-3xl font-bold text-navy">Circuits</h1>
+            <p className="text-xs lg:text-sm text-text-secondary">{circuits.length} registered circuits</p>
           </div>
           <Button
             variant="gold"
@@ -136,8 +136,8 @@ export default function CircuitsPage() {
         </div>
       </div>
 
-      {/* Martha */}
-      <div className="mb-6">
+      {/* Martha — mobile only */}
+      <div className="mb-6 lg:hidden">
         <MarthaAssistant size="sm" layout="horizontal" />
       </div>
 
@@ -158,24 +158,24 @@ export default function CircuitsPage() {
           </p>
         </Card>
       ) : (
-        <div className="space-y-3">
+        <div className="space-y-3 lg:grid lg:grid-cols-2 lg:gap-4 lg:space-y-0">
           {circuits.map((circuit, i) => {
             const stats = getCircuitStats(circuit.uid);
             const isExpanded = expandedId === circuit.uid;
 
             return (
-              <Card key={circuit.uid} delay={i * 0.05}>
+              <Card key={circuit.uid} delay={i * 0.05} className="lg:self-start">
                 <motion.div
                   className="p-4 cursor-pointer"
                   onClick={() => setExpandedId(isExpanded ? null : circuit.uid)}
                 >
                   <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-xl bg-navy/10 flex items-center justify-center">
+                    <div className="w-10 h-10 lg:w-12 lg:h-12 rounded-xl bg-navy/10 flex items-center justify-center">
                       <MapPin size={18} className="text-navy" />
                     </div>
                     <div className="flex-1 min-w-0">
-                      <p className="text-sm font-bold text-navy">{circuit.name}</p>
-                      <p className="text-[10px] text-text-secondary flex items-center gap-1">
+                      <p className="text-sm lg:text-base font-bold text-navy">{circuit.name}</p>
+                      <p className="text-[10px] lg:text-xs text-text-secondary flex items-center gap-1">
                         <Globe size={10} /> {circuit.country}
                         {circuit.subBranches && circuit.subBranches.length > 0 && (
                           <span className="ml-1">
@@ -186,10 +186,10 @@ export default function CircuitsPage() {
                       </p>
                     </div>
                     <div className="text-right">
-                      <p className="text-xs font-bold font-mono text-navy">
+                      <p className="text-xs lg:text-sm font-bold font-mono text-navy">
                         {formatCurrency(stats.totalReceipts)}
                       </p>
-                      <p className="text-[10px] text-text-secondary">
+                      <p className="text-[10px] lg:text-xs text-text-secondary">
                         {stats.transactionCount} txns
                       </p>
                     </div>

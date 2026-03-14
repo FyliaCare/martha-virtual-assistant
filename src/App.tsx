@@ -36,7 +36,7 @@ function App() {
         <BottomNav />
 
         {/* Main content area */}
-        <main className="flex-1 pb-20 lg:pb-0 lg:ml-56">
+        <main className="flex-1 pb-20 lg:pb-0 lg:ml-64">
           <AnimatePresence mode="wait">
             <Routes>
               <Route path="/" element={<HomePage />} />

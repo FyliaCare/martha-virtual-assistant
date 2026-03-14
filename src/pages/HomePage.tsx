@@ -105,9 +105,9 @@ export default function HomePage() {
   ];
 
   return (
-    <div className="pb-4 px-4 lg:px-8 max-w-lg lg:max-w-5xl mx-auto">
+    <div className="pb-4 px-4 lg:px-10 lg:py-6 max-w-lg lg:max-w-7xl mx-auto">
       {/* Header */}
-      <div className="pt-6 pb-4">
+      <div className="pt-6 pb-4 lg:pt-0 lg:pb-6">
         <motion.div
           initial={{ opacity: 0, y: -10 }}
           animate={{ opacity: 1, y: 0 }}
@@ -118,21 +118,30 @@ export default function HomePage() {
               <img src="/icons/icon-96.png" alt="Martha" className="w-full h-full" />
             </div>
             <div>
-              <h1 className="text-xl lg:text-2xl font-bold text-navy">Martha</h1>
-              <p className="text-xs text-text-secondary">Europe Mission Finance</p>
+              <h1 className="text-xl lg:text-3xl font-bold text-navy">Dashboard</h1>
+              <p className="text-xs lg:text-sm text-text-secondary">
+                {isHistorical
+                  ? `Showing ${QUARTER_LABELS[displayQ]} ${displayY}`
+                  : `${QUARTER_LABELS[displayQ]} ${displayY} — Europe Mission Finance`}
+              </p>
             </div>
           </div>
-          <div className="text-right">
-            <p className="text-[10px] text-text-secondary uppercase tracking-wider font-semibold">
-              {QUARTER_LABELS[displayQ]}
-            </p>
-            <p className="text-xs text-text-secondary">{displayY}</p>
+          <div className="text-right lg:flex lg:items-center lg:gap-3">
+            <div className="hidden lg:block px-4 py-2 bg-navy/5 rounded-xl">
+              <p className="text-xs font-semibold text-navy">{QUARTER_LABELS[displayQ]} {displayY}</p>
+            </div>
+            <div className="lg:hidden">
+              <p className="text-[10px] text-text-secondary uppercase tracking-wider font-semibold">
+                {QUARTER_LABELS[displayQ]}
+              </p>
+              <p className="text-xs text-text-secondary">{displayY}</p>
+            </div>
           </div>
         </motion.div>
       </div>
 
-      {/* Martha Greeting */}
-      <div className="mb-6">
+      {/* Martha Greeting — hidden on desktop (sidebar branding is enough) */}
+      <div className="mb-6 lg:hidden">
         <MarthaAssistant size="sm" layout="horizontal" />
       </div>
 
@@ -215,15 +224,15 @@ export default function HomePage() {
 
       {/* Historical Data Notice */}
       {isHistorical && (
-        <div className="mb-4 p-3 bg-gold/10 border border-gold/30 rounded-xl text-center">
-          <p className="text-xs text-gold-dark font-medium">
+        <div className="mb-4 lg:mb-6 p-3 bg-gold/10 border border-gold/30 rounded-xl text-center">
+          <p className="text-xs lg:text-sm text-gold-dark font-medium">
             Showing data from {QUARTER_LABELS[displayQ]} {displayY} — no transactions yet for {QUARTER_LABELS[currentQ]} {currentY}
           </p>
         </div>
       )}
 
       {/* Summary Cards Grid */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-6">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 lg:gap-4 mb-6 lg:mb-8">
         <SummaryCard
           label="Total Receipts"
           value={formatCurrency(totalReceipts)}
@@ -254,98 +263,130 @@ export default function HomePage() {
         />
       </div>
 
-      {/* Quick Actions */}
-      <div className="mb-6">
-        <h2 className="text-sm font-bold text-navy mb-3">Quick Actions</h2>
-        <div className="grid grid-cols-3 lg:grid-cols-6 gap-3">
-          {quickActions.map((action, i) => (
-            <motion.button
-              key={action.label}
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ delay: 0.3 + i * 0.05 }}
-              whileTap={{ scale: 0.95 }}
-              onClick={() => navigate(action.path)}
-              className="flex flex-col items-center gap-2 py-4 px-2 rounded-2xl bg-white border border-border/50 shadow-sm"
-            >
-              <div className={`w-10 h-10 rounded-xl ${action.color} flex items-center justify-center`}>
-                <action.icon size={18} />
+      {/* Desktop: Two-column layout for Quick Actions + Recent Transactions */}
+      <div className="lg:grid lg:grid-cols-5 lg:gap-6">
+        {/* Left column: Quick Actions + Stats */}
+        <div className="lg:col-span-2">
+          {/* Quick Actions */}
+          <div className="mb-6">
+            <h2 className="text-sm lg:text-base font-bold text-navy mb-3">Quick Actions</h2>
+            <div className="grid grid-cols-3 gap-3">
+              {quickActions.map((action, i) => (
+                <motion.button
+                  key={action.label}
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ delay: 0.3 + i * 0.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  whileHover={{ y: -2, boxShadow: '0 8px 24px rgba(27, 42, 74, 0.1)' }}
+                  onClick={() => navigate(action.path)}
+                  className="flex flex-col items-center gap-2 py-4 lg:py-5 px-2 rounded-2xl bg-white border border-border/50 shadow-sm transition-all"
+                >
+                  <div className={`w-10 h-10 lg:w-11 lg:h-11 rounded-xl ${action.color} flex items-center justify-center`}>
+                    <action.icon size={18} />
+                  </div>
+                  <span className="text-[11px] lg:text-xs font-medium text-text-primary">{action.label}</span>
+                </motion.button>
+              ))}
+            </div>
+          </div>
+
+          {/* Quick Stats Row */}
+          <Card className="p-4 lg:p-5 mb-6 lg:mb-0">
+            <h3 className="text-xs font-semibold text-text-secondary uppercase tracking-wider mb-3">Overview</h3>
+            <div className="space-y-3">
+              <div className="flex items-center justify-between">
+                <span className="text-sm text-text-secondary">Active Circuits</span>
+                <span className="text-sm font-bold text-navy">{circuits.length}</span>
               </div>
-              <span className="text-[11px] font-medium text-text-primary">{action.label}</span>
-            </motion.button>
-          ))}
-        </div>
-      </div>
-
-      {/* Recent Transactions */}
-      <div className="mb-6">
-        <div className="flex items-center justify-between mb-3">
-          <h2 className="text-sm font-bold text-navy">Recent ({QUARTER_LABELS[displayQ]})</h2>
-          {transactions.length > 0 && (
-            <button
-              onClick={() => navigate('/reports')}
-              className="text-xs text-gold-dark font-medium"
-            >
-              View All
-            </button>
-          )}
-        </div>
-
-        {recentTransactions.length === 0 ? (
-          <Card className="p-6 text-center">
-            <p className="text-sm text-text-secondary mb-2">No transactions yet</p>
-            <p className="text-xs text-text-light">
-              Tap "New Entry" to start recording your finances!
-            </p>
+              <div className="h-px bg-border/50" />
+              <div className="flex items-center justify-between">
+                <span className="text-sm text-text-secondary">Products Tracked</span>
+                <span className="text-sm font-bold text-navy">{products.length}</span>
+              </div>
+              <div className="h-px bg-border/50" />
+              <div className="flex items-center justify-between">
+                <span className="text-sm text-text-secondary">Total Entries</span>
+                <span className="text-sm font-bold text-navy">{transactions.length}</span>
+              </div>
+            </div>
           </Card>
-        ) : (
-          <div className="space-y-2">
-            {recentTransactions.map((txn, i) => (
-              <Card
-                key={txn.uid}
-                className="p-3 flex items-center gap-3 cursor-pointer active:scale-[0.98] transition-transform"
-                delay={0.35 + i * 0.05}
-                onClick={() => {
-                  setSelectedTxn(txn);
-                  setShowTxnModal(true);
-                }}
-              >
-                <div
-                  className={`w-8 h-8 rounded-lg flex items-center justify-center ${
-                    txn.type === 'receipt'
-                      ? 'bg-success-light text-success'
-                      : 'bg-alert-light text-alert'
-                  }`}
+        </div>
+
+        {/* Right column: Recent Transactions */}
+        <div className="lg:col-span-3">
+          <div className="mb-6">
+            <div className="flex items-center justify-between mb-3">
+              <h2 className="text-sm lg:text-base font-bold text-navy">Recent Transactions</h2>
+              {transactions.length > 0 && (
+                <button
+                  onClick={() => navigate('/reports')}
+                  className="text-xs lg:text-sm text-gold-dark font-medium hover:underline"
                 >
-                  {txn.type === 'receipt' ? (
-                    <ArrowUpRight size={16} />
-                  ) : (
-                    <ArrowDownRight size={16} />
-                  )}
-                </div>
-                <div className="flex-1 min-w-0">
-                  <p className="text-sm font-medium text-text-primary truncate">
-                    {txn.description}
-                  </p>
-                  <p className="text-[10px] text-text-secondary">
-                    {new Date(txn.date).toLocaleDateString('en-GB', {
-                      day: 'numeric',
-                      month: 'short',
-                    })}
-                  </p>
-                </div>
-                <p
-                  className={`text-sm font-bold font-mono ${
-                    txn.type === 'receipt' ? 'text-success' : 'text-alert'
-                  }`}
-                >
-                  {txn.type === 'receipt' ? '+' : '-'}
-                  {formatCurrency(txn.amount)}
+                  View All →
+                </button>
+              )}
+            </div>
+
+            {recentTransactions.length === 0 ? (
+              <Card className="p-6 lg:p-10 text-center">
+                <p className="text-sm lg:text-base text-text-secondary mb-2">No transactions yet</p>
+                <p className="text-xs lg:text-sm text-text-light">
+                  Click "New Entry" to start recording your finances!
                 </p>
               </Card>
-            ))}
+            ) : (
+              <div className="space-y-2">
+                {recentTransactions.map((txn, i) => (
+                  <Card
+                    key={txn.uid}
+                    className="p-3 lg:p-4 flex items-center gap-3 cursor-pointer active:scale-[0.98] transition-transform"
+                    delay={0.35 + i * 0.05}
+                    hover
+                    onClick={() => {
+                      setSelectedTxn(txn);
+                      setShowTxnModal(true);
+                    }}
+                  >
+                    <div
+                      className={`w-8 h-8 lg:w-10 lg:h-10 rounded-lg lg:rounded-xl flex items-center justify-center ${
+                        txn.type === 'receipt'
+                          ? 'bg-success-light text-success'
+                          : 'bg-alert-light text-alert'
+                      }`}
+                    >
+                      {txn.type === 'receipt' ? (
+                        <ArrowUpRight size={16} />
+                      ) : (
+                        <ArrowDownRight size={16} />
+                      )}
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm lg:text-base font-medium text-text-primary truncate">
+                        {txn.description}
+                      </p>
+                      <p className="text-[10px] lg:text-xs text-text-secondary">
+                        {new Date(txn.date).toLocaleDateString('en-GB', {
+                          day: 'numeric',
+                          month: 'short',
+                          year: 'numeric',
+                        })}
+                      </p>
+                    </div>
+                    <p
+                      className={`text-sm lg:text-base font-bold font-mono ${
+                        txn.type === 'receipt' ? 'text-success' : 'text-alert'
+                      }`}
+                    >
+                      {txn.type === 'receipt' ? '+' : '-'}
+                      {formatCurrency(txn.amount)}
+                    </p>
+                  </Card>
+                ))}
+              </div>
+            )}
           </div>
-        )}
+        </div>
       </div>
 
       {/* Transaction Detail Modal */}
@@ -357,26 +398,6 @@ export default function HomePage() {
           setSelectedTxn(null);
         }}
       />
-
-      {/* Quick Stats Row */}
-      <Card className="p-4 lg:p-6 mb-2">
-        <div className="flex items-center justify-between text-center">
-          <div>
-            <p className="text-lg font-bold text-navy">{circuits.length}</p>
-            <p className="text-[10px] text-text-secondary">Circuits</p>
-          </div>
-          <div className="w-px h-8 bg-border"></div>
-          <div>
-            <p className="text-lg font-bold text-navy">{products.length}</p>
-            <p className="text-[10px] text-text-secondary">Products</p>
-          </div>
-          <div className="w-px h-8 bg-border"></div>
-          <div>
-            <p className="text-lg font-bold text-navy">{transactions.length}</p>
-            <p className="text-[10px] text-text-secondary">Total Entries</p>
-          </div>
-        </div>
-      </Card>
     </div>
   );
 }

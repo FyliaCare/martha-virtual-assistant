@@ -44,23 +44,25 @@ export default function SummaryCard({ label, value, icon, color = 'navy', delay 
       initial={{ opacity: 0, y: 16 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.35, delay }}
-      className={`${colors.bg} rounded-2xl p-4 flex items-center gap-3`}
+      className={`${colors.bg} rounded-2xl p-4 lg:p-5`}
     >
-      <div className={`${colors.icon} w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0`}>
-        {icon}
-      </div>
-      <div className="min-w-0">
-        <p className="text-[10px] font-semibold text-text-secondary uppercase tracking-wider truncate">
-          {label}
-        </p>
-        <motion.p
-          className={`text-lg font-bold font-mono ${colors.value} truncate`}
-          initial={{ opacity: 0, scale: 0.8 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ delay: delay + 0.2, duration: 0.3 }}
-        >
-          {value}
-        </motion.p>
+      <div className="flex items-center gap-3 lg:gap-4">
+        <div className={`${colors.icon} w-10 h-10 lg:w-12 lg:h-12 rounded-xl flex items-center justify-center shrink-0`}>
+          {icon}
+        </div>
+        <div className="min-w-0">
+          <p className="text-[10px] lg:text-xs font-semibold text-text-secondary uppercase tracking-wider truncate">
+            {label}
+          </p>
+          <motion.p
+            className={`text-lg lg:text-xl font-bold font-mono ${colors.value} truncate`}
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ delay: delay + 0.2, duration: 0.3 }}
+          >
+            {value}
+          </motion.p>
+        </div>
       </div>
     </motion.div>
   );

@@ -32,7 +32,7 @@ export default function BottomNav() {
               <button
                 key={item.path}
                 onClick={() => navigate(item.path)}
-                className="relative flex flex-col items-center gap-0.5 py-2 px-3 min-w-[60px]"
+                className="relative flex flex-col items-center gap-0.5 py-2 px-3 min-w-15"
               >
                 {isActive && (
                   <motion.div
@@ -62,20 +62,20 @@ export default function BottomNav() {
       </nav>
 
       {/* ═══ Desktop Sidebar ═══ */}
-      <aside className="hidden lg:flex lg:flex-col lg:fixed lg:inset-y-0 lg:left-0 lg:w-56 lg:bg-navy lg:z-40">
+      <aside className="hidden lg:flex lg:flex-col lg:fixed lg:inset-y-0 lg:left-0 lg:w-64 lg:bg-navy lg:z-40 lg:shadow-xl">
         {/* Brand header */}
-        <div className="flex items-center gap-3 px-5 py-6 border-b border-white/10">
-          <div className="w-9 h-9 rounded-lg overflow-hidden shadow-md">
+        <div className="flex items-center gap-3 px-6 py-7 border-b border-white/10">
+          <div className="w-10 h-10 rounded-xl overflow-hidden shadow-lg ring-2 ring-gold/30">
             <img src="/icons/icon-96.png" alt="Martha" className="w-full h-full" />
           </div>
           <div>
-            <p className="text-sm font-bold text-white">Martha</p>
-            <p className="text-[10px] text-white/50">Europe Mission Finance</p>
+            <p className="text-base font-bold text-white tracking-tight">Martha</p>
+            <p className="text-[11px] text-gold/70 font-medium">Europe Mission Finance</p>
           </div>
         </div>
 
         {/* Nav items */}
-        <nav className="flex-1 px-3 py-4 space-y-1 overflow-y-auto">
+        <nav className="flex-1 px-3 py-5 space-y-1 overflow-y-auto">
           {NAV_ITEMS.map((item) => {
             const isActive = location.pathname === item.path;
             const Icon = item.icon;
@@ -84,18 +84,18 @@ export default function BottomNav() {
               <button
                 key={item.path}
                 onClick={() => navigate(item.path)}
-                className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all ${
+                className={`group w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200 ${
                   isActive
-                    ? 'bg-gold/20 text-gold'
-                    : 'text-white/60 hover:bg-white/5 hover:text-white/90'
+                    ? 'bg-gold/15 text-gold shadow-sm'
+                    : 'text-white/50 hover:bg-white/5 hover:text-white/90'
                 }`}
               >
-                <Icon size={18} strokeWidth={isActive ? 2.2 : 1.6} />
-                <span>{item.label}</span>
+                <Icon size={20} strokeWidth={isActive ? 2.2 : 1.6} />
+                <span className="flex-1 text-left">{item.label}</span>
                 {isActive && (
                   <motion.div
                     layoutId="sidebar-indicator"
-                    className="ml-auto w-1.5 h-1.5 rounded-full bg-gold"
+                    className="w-1.5 h-6 rounded-full bg-gold"
                     transition={{ type: 'spring', stiffness: 400, damping: 30 }}
                   />
                 )}
@@ -105,8 +105,12 @@ export default function BottomNav() {
         </nav>
 
         {/* Footer */}
-        <div className="px-5 py-4 border-t border-white/10">
-          <p className="text-[10px] text-white/30">Martha v1.0</p>
+        <div className="px-6 py-5 border-t border-white/10">
+          <div className="flex items-center gap-2 mb-1">
+            <div className="w-2 h-2 rounded-full bg-success animate-pulse" />
+            <p className="text-[11px] text-white/50 font-medium">Synced with cloud</p>
+          </div>
+          <p className="text-[10px] text-white/25">Martha v1.0 — Europe Mission</p>
         </div>
       </aside>
     </>

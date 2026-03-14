@@ -251,16 +251,16 @@ export default function EntryPage() {
     category === 'merchandise_sale' || category === 'merchandise_purchase';
 
   return (
-    <div className="pb-4 px-4 lg:px-8 max-w-lg lg:max-w-2xl mx-auto">
+    <div className="pb-4 px-4 lg:px-10 lg:py-6 max-w-lg lg:max-w-3xl mx-auto">
       {/* Header with Progress */}
-      <div className="pt-6 pb-4">
+      <div className="pt-6 pb-4 lg:pt-0">
         <div className="flex items-center gap-3 mb-4">
           <button onClick={goBack} className="w-9 h-9 flex items-center justify-center rounded-xl bg-white border border-border/50">
             <ChevronLeft size={18} className="text-navy" />
           </button>
           <div className="flex-1">
-            <h1 className="text-lg font-bold text-navy">New Entry</h1>
-            <p className="text-[10px] text-text-secondary">
+            <h1 className="text-lg lg:text-2xl font-bold text-navy">New Entry</h1>
+            <p className="text-[10px] lg:text-xs text-text-secondary">
               Step {currentStepIndex + 1} of {STEPS.length}
             </p>
           </div>

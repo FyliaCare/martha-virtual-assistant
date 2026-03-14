@@ -176,25 +176,25 @@ export default function EditDataPage() {
   const editCategories = editForm.type === 'receipt' ? RECEIPT_CATEGORIES : PAYMENT_CATEGORIES;
 
   return (
-    <div className="pb-24 px-4 lg:px-8 max-w-2xl lg:max-w-5xl mx-auto">
+    <div className="pb-24 px-4 lg:px-10 lg:py-6 max-w-2xl lg:max-w-7xl mx-auto">
       {/* Header */}
-      <div className="pt-6 pb-4">
+      <div className="pt-6 pb-4 lg:pt-0 lg:pb-6">
         <div className="flex items-center justify-between mb-2">
           <Button variant="ghost" size="sm" onClick={() => navigate(-1)}>
             <ArrowLeft size={16} className="mr-1" /> Back
           </Button>
           <div className="text-right">
-            <p className="text-xs text-text-secondary">{filtered.length} records</p>
+            <p className="text-xs lg:text-sm text-text-secondary">{filtered.length} records</p>
           </div>
         </div>
-        <h1 className="text-xl lg:text-2xl font-bold text-navy">Edit Data</h1>
-        <p className="text-xs text-text-secondary mt-1">
-          View, search & correct any transaction. Tap the pencil to edit.
+        <h1 className="text-xl lg:text-3xl font-bold text-navy">Edit Data</h1>
+        <p className="text-xs lg:text-sm text-text-secondary mt-1">
+          View, search & correct any transaction. Click the pencil to edit.
         </p>
       </div>
 
-      {/* Martha */}
-      <div className="mb-4">
+      {/* Martha — mobile only */}
+      <div className="mb-4 lg:hidden">
         <MarthaAssistant size="sm" layout="horizontal" />
       </div>
 
@@ -262,6 +262,16 @@ export default function EditDataPage() {
         </Card>
       )}
 
+      {/* Table header — desktop only */}
+      <div className="hidden lg:flex items-center gap-3 px-3 py-2 mb-2 text-xs font-semibold text-text-secondary uppercase tracking-wider">
+        <div className="w-9 shrink-0" />
+        <div className="flex-1 min-w-0">Description</div>
+        <div className="w-28 text-center">Category</div>
+        <div className="w-28 text-center">Circuit</div>
+        <div className="w-24 text-right">Amount</div>
+        <div className="w-10 shrink-0" />
+      </div>
+
       {/* Transaction list */}
       <div className="space-y-2">
         <AnimatePresence mode="popLayout">
@@ -286,9 +296,9 @@ export default function EditDataPage() {
                     </button>
                   </div>
 
-                  <div className="space-y-3">
+                  <div className="space-y-3 lg:grid lg:grid-cols-2 lg:gap-4 lg:space-y-0">
                     {/* Type toggle */}
-                    <div className="flex gap-2">
+                    <div className="flex gap-2 lg:col-span-2">
                       <button
                         onClick={() =>
                           setEditForm((f) => ({
@@ -326,12 +336,14 @@ export default function EditDataPage() {
                     </div>
 
                     {/* Description */}
+                    <div className="lg:col-span-2">
                     <Input
                       label="Description"
                       value={editForm.description}
                       onChange={(e) => setEditForm((f) => ({ ...f, description: e.target.value }))}
                       placeholder="What was this for?"
                     />
+                    </div>
 
                     {/* Amount & Date row */}
                     <div className="grid grid-cols-2 gap-2">
@@ -376,15 +388,17 @@ export default function EditDataPage() {
                     />
 
                     {/* Notes */}
+                    <div className="lg:col-span-2">
                     <Input
                       label="Notes (optional)"
                       value={editForm.notes}
                       onChange={(e) => setEditForm((f) => ({ ...f, notes: e.target.value }))}
                       placeholder="Additional notes..."
                     />
+                    </div>
 
                     {/* Action buttons */}
-                    <div className="flex gap-2 pt-2">
+                    <div className="flex gap-2 pt-2 lg:col-span-2">
                       <Button
                         variant="danger"
                         size="sm"
@@ -413,7 +427,7 @@ export default function EditDataPage() {
                 </Card>
               ) : (
                 /* ═══════════ VIEW MODE ═══════════ */
-                <Card className="p-3">
+                <Card className="p-3 lg:hover:shadow-md lg:transition-shadow">
                   <div className="flex items-center gap-3">
                     {/* Type icon */}
                     <div
@@ -432,18 +446,28 @@ export default function EditDataPage() {
 
                     {/* Details */}
                     <div className="flex-1 min-w-0">
-                      <p className="text-xs font-semibold text-text-primary truncate">
+                      <p className="text-xs lg:text-sm font-semibold text-text-primary truncate">
                         {txn.description}
                       </p>
-                      <p className="text-[10px] text-text-secondary">
+                      <p className="text-[10px] lg:text-xs text-text-secondary">
                         {formatDate(txn.date)} &bull; {getCategoryLabel(txn.category)}
                         {txn.circuitId ? ` • ${getCircuitName(txn.circuitId)}` : ''}
                       </p>
                       {txn.notes && (
-                        <p className="text-[9px] text-text-light mt-0.5 truncate">
+                        <p className="text-[9px] text-text-light mt-0.5 truncate lg:hidden">
                           {txn.notes}
                         </p>
                       )}
+                    </div>
+
+                    {/* Category — desktop only */}
+                    <div className="hidden lg:block w-28 text-center">
+                      <span className="text-xs text-text-secondary">{getCategoryLabel(txn.category)}</span>
+                    </div>
+
+                    {/* Circuit — desktop only */}
+                    <div className="hidden lg:block w-28 text-center">
+                      <span className="text-xs text-text-secondary">{txn.circuitId ? getCircuitName(txn.circuitId) : '—'}</span>
                     </div>
 
                     {/* Amount */}
