@@ -3,32 +3,28 @@
 // ============================================================
 
 import { initializeApp } from 'firebase/app';
-import { getFirestore, enableIndexedDbPersistence } from 'firebase/firestore';
+import {
+  initializeFirestore,
+  persistentLocalCache,
+  persistentMultipleTabManager,
+} from 'firebase/firestore';
 
 const firebaseConfig = {
-  apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
-  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
-  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
-  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
-  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
-  appId: import.meta.env.VITE_FIREBASE_APP_ID,
+  apiKey: 'AIzaSyDNYb9d1QFl-q-GVcX-cp-wYXqD4F7gcR0',
+  authDomain: 'marthavirtualassist.firebaseapp.com',
+  projectId: 'marthavirtualassist',
+  storageBucket: 'marthavirtualassist.firebasestorage.app',
+  messagingSenderId: '189641972795',
+  appId: '1:189641972795:web:6daecae63d628669a7101e',
 };
 
-// Only initialize if config is present (allows app to work without Firebase)
-const isConfigured = !!firebaseConfig.apiKey && firebaseConfig.apiKey !== 'your-api-key-here';
+const app = initializeApp(firebaseConfig);
 
-const app = isConfigured ? initializeApp(firebaseConfig) : null;
-export const firestore = app ? getFirestore(app) : null;
+// Use persistent local cache with multi-tab support
+export const firestore = initializeFirestore(app, {
+  localCache: persistentLocalCache({
+    tabManager: persistentMultipleTabManager(),
+  }),
+});
 
-// Enable offline persistence so Firestore caches data locally
-if (firestore) {
-  enableIndexedDbPersistence(firestore).catch((err) => {
-    if (err.code === 'failed-precondition') {
-      console.warn('[Firebase] Persistence failed — multiple tabs open');
-    } else if (err.code === 'unimplemented') {
-      console.warn('[Firebase] Persistence not supported in this browser');
-    }
-  });
-}
-
-export { isConfigured as firebaseEnabled };
+export const firebaseEnabled = true;

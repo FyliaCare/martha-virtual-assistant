@@ -17,15 +17,11 @@ import {
   getDocs,
   writeBatch,
 } from 'firebase/firestore';
-import { firestore, firebaseEnabled } from '../firebase';
+import { firestore } from '../firebase';
 import { db } from './database';
 import type { Transaction, Circuit, Product, StockMovement } from '../types';
 
 // ── Helpers ──
-
-function isOnline(): boolean {
-  return firebaseEnabled && !!firestore;
-}
 
 /** Strip the Dexie auto-increment `id` field before pushing to Firestore */
 function stripId<T extends { id?: number }>(record: T): Omit<T, 'id'> {
@@ -40,18 +36,16 @@ export async function syncDocToCloud(
   uid: string,
   data: Record<string, unknown>,
 ) {
-  if (!isOnline()) return;
   try {
-    await setDoc(doc(firestore!, collectionName, uid), data);
+    await setDoc(doc(firestore, collectionName, uid), data);
   } catch (e) {
     console.warn(`[Sync] Push ${collectionName}/${uid} failed:`, e);
   }
 }
 
 export async function deleteDocFromCloud(collectionName: string, uid: string) {
-  if (!isOnline()) return;
   try {
-    await deleteDoc(doc(firestore!, collectionName, uid));
+    await deleteDoc(doc(firestore, collectionName, uid));
   } catch (e) {
     console.warn(`[Sync] Delete ${collectionName}/${uid} failed:`, e);
   }
@@ -63,15 +57,15 @@ async function batchPush(
   collectionName: string,
   records: Array<{ uid: string; id?: number; [k: string]: unknown }>,
 ) {
-  if (!isOnline() || records.length === 0) return;
+  if (records.length === 0) return;
 
   // Firestore batches are limited to 500 operations
   const BATCH_SIZE = 450;
   for (let i = 0; i < records.length; i += BATCH_SIZE) {
     const chunk = records.slice(i, i + BATCH_SIZE);
-    const batch = writeBatch(firestore!);
+    const batch = writeBatch(firestore);
     for (const record of chunk) {
-      const ref = doc(firestore!, collectionName, record.uid);
+      const ref = doc(firestore, collectionName, record.uid);
       batch.set(ref, stripId(record));
     }
     await batch.commit();
@@ -81,13 +75,11 @@ async function batchPush(
 // ── Pull all data from Firestore and merge into Dexie ──
 
 export async function pullFromCloud(): Promise<boolean> {
-  if (!isOnline()) return false;
-
   try {
     let pulled = false;
 
     // ── Transactions ──
-    const txnSnap = await getDocs(collection(firestore!, 'transactions'));
+    const txnSnap = await getDocs(collection(firestore, 'transactions'));
     if (!txnSnap.empty) {
       pulled = true;
       const remoteTxns = txnSnap.docs.map((d) => d.data() as Transaction);
@@ -112,7 +104,7 @@ export async function pullFromCloud(): Promise<boolean> {
     }
 
     // ── Circuits ──
-    const circSnap = await getDocs(collection(firestore!, 'circuits'));
+    const circSnap = await getDocs(collection(firestore, 'circuits'));
     if (!circSnap.empty) {
       pulled = true;
       const remoteCircuits = circSnap.docs.map((d) => d.data() as Circuit);
@@ -134,7 +126,7 @@ export async function pullFromCloud(): Promise<boolean> {
     }
 
     // ── Products ──
-    const prodSnap = await getDocs(collection(firestore!, 'products'));
+    const prodSnap = await getDocs(collection(firestore, 'products'));
     if (!prodSnap.empty) {
       pulled = true;
       const remoteProducts = prodSnap.docs.map((d) => d.data() as Product);
@@ -156,7 +148,7 @@ export async function pullFromCloud(): Promise<boolean> {
     }
 
     // ── Stock Movements ──
-    const smSnap = await getDocs(collection(firestore!, 'stockMovements'));
+    const smSnap = await getDocs(collection(firestore, 'stockMovements'));
     if (!smSnap.empty) {
       pulled = true;
       const remoteMovements = smSnap.docs.map((d) => d.data() as StockMovement);
@@ -185,7 +177,6 @@ export async function pullFromCloud(): Promise<boolean> {
 // ── Push all local data to Firestore (after first seed) ──
 
 export async function pushAllToCloud() {
-  if (!isOnline()) return;
 
   try {
     console.log('[Sync] Pushing all local data to cloud...');
