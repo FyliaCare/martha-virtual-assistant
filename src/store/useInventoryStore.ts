@@ -4,6 +4,7 @@
 
 import { create } from 'zustand';
 import { db } from '../db/database';
+import { syncDocToCloud } from '../db/sync';
 import type { Product, StockMovement } from '../types';
 import { generateId, now } from '../utils/helpers';
 
@@ -45,6 +46,7 @@ export const useInventoryStore = create<InventoryStore>((set, get) => ({
       updatedAt: now(),
     };
     await db.products.add(product);
+    syncDocToCloud('products', product.uid, { ...product, id: undefined });
     await get().loadProducts();
   },
 
@@ -52,6 +54,8 @@ export const useInventoryStore = create<InventoryStore>((set, get) => ({
     const existing = await db.products.where('uid').equals(uid).first();
     if (existing?.id) {
       await db.products.update(existing.id, { ...data, updatedAt: now() });
+      const full = await db.products.where('uid').equals(uid).first();
+      if (full) syncDocToCloud('products', uid, { ...full, id: undefined });
       await get().loadProducts();
     }
   },
@@ -63,6 +67,7 @@ export const useInventoryStore = create<InventoryStore>((set, get) => ({
       createdAt: now(),
     };
     await db.stockMovements.add(movement);
+    syncDocToCloud('stockMovements', movement.uid, { ...movement, id: undefined });
 
     // Update product stock
     const product = await db.products.where('uid').equals(data.productId).first();
@@ -72,6 +77,8 @@ export const useInventoryStore = create<InventoryStore>((set, get) => ({
         currentStock: Math.max(0, product.currentStock + stockChange),
         updatedAt: now(),
       });
+      const updated = await db.products.where('uid').equals(data.productId).first();
+      if (updated) syncDocToCloud('products', updated.uid, { ...updated, id: undefined });
     }
 
     await get().loadProducts();

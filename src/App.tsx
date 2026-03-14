@@ -16,10 +16,17 @@ import SettingsPage from './pages/SettingsPage';
 import ComprehensiveReportPage from './pages/ComprehensiveReportPage';
 import EditDataPage from './pages/EditDataPage';
 import { seedDatabase } from './db/seed';
+import { pullFromCloud } from './db/sync';
 
 function App() {
   useEffect(() => {
-    seedDatabase();
+    async function init() {
+      // 1. Pull latest data from Firestore (merges with local)
+      await pullFromCloud();
+      // 2. Seed if needed (first launch only, then pushes to cloud)
+      await seedDatabase();
+    }
+    init();
   }, []);
 
   return (

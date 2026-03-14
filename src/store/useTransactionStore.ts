@@ -4,6 +4,7 @@
 
 import { create } from 'zustand';
 import { db } from '../db/database';
+import { syncDocToCloud, deleteDocFromCloud } from '../db/sync';
 import type { Transaction, TransactionType, Quarter } from '../types';
 import { generateId, now } from '../utils/helpers';
 
@@ -53,13 +54,17 @@ export const useTransactionStore = create<TransactionStore>((set, get) => ({
       updatedAt: now(),
     };
     await db.transactions.add(transaction);
+    syncDocToCloud('transactions', transaction.uid, { ...transaction, id: undefined });
     await get().loadAll();
   },
 
   updateTransaction: async (uid, data) => {
     const existing = await db.transactions.where('uid').equals(uid).first();
     if (existing?.id) {
-      await db.transactions.update(existing.id, { ...data, updatedAt: now() });
+      const updated = { ...data, updatedAt: now() };
+      await db.transactions.update(existing.id, updated);
+      const full = await db.transactions.where('uid').equals(uid).first();
+      if (full) syncDocToCloud('transactions', uid, { ...full, id: undefined });
       await get().loadAll();
     }
   },
@@ -68,6 +73,7 @@ export const useTransactionStore = create<TransactionStore>((set, get) => ({
     const existing = await db.transactions.where('uid').equals(uid).first();
     if (existing?.id) {
       await db.transactions.delete(existing.id);
+      deleteDocFromCloud('transactions', uid);
       await get().loadAll();
     }
   },

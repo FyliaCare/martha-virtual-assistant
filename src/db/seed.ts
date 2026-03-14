@@ -6,6 +6,7 @@ import { db } from './database';
 import { DEFAULT_CIRCUITS, DEFAULT_PRODUCTS } from '../utils/constants';
 import { generateId, now } from '../utils/helpers';
 import { seedHistoricalData } from './seedHistoricalData';
+import { pushAllToCloud } from './sync';
 
 // Bump this version whenever seed data changes to force a re-seed.
 // The app stores the last-applied seed version in localStorage.
@@ -62,4 +63,8 @@ export async function seedDatabase() {
 
   // Mark current seed version as applied
   localStorage.setItem(SEED_VERSION_KEY, String(SEED_DATA_VERSION));
+
+  // Push all seed data to Firestore for cross-device sync
+  // (runs in background — doesn't block the UI)
+  pushAllToCloud();
 }
