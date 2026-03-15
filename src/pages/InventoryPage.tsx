@@ -17,6 +17,8 @@ import {
   Calendar,
   X,
   Layers,
+  Trash2,
+  Save,
 } from 'lucide-react';
 import Card from '../components/ui/Card';
 import Button from '../components/ui/Button';
@@ -27,7 +29,7 @@ import MarthaAssistant from '../components/martha/MarthaAssistant';
 import { useInventoryStore } from '../store/useInventoryStore';
 import { useMarthaStore } from '../store/useMarthaStore';
 import { formatCurrency, formatDate, toISODate, getCurrentQuarter, getCurrentYear } from '../utils/helpers';
-import type { Product, ProductCategory, Quarter } from '../types';
+import type { Product, ProductCategory, StockMovement, Quarter } from '../types';
 
 type ModalMode = 'add-product' | 'edit-product' | 'stock-movement' | 'product-detail' | null;
 
@@ -38,7 +40,10 @@ export default function InventoryPage() {
     loadMovements,
     addProduct,
     updateProduct,
+    deleteProduct,
     addStockMovement,
+    updateStockMovement,
+    deleteStockMovement,
     getLowStockProducts,
   } = useInventoryStore();
   const { speak } = useMarthaStore();
@@ -59,6 +64,18 @@ export default function InventoryPage() {
   const [smQty, setSmQty] = useState('');
   const [smPrice, setSmPrice] = useState('');
   const [smNotes, setSmNotes] = useState('');
+
+  // Delete confirmation state
+  const [deleteProductConfirm, setDeleteProductConfirm] = useState(false);
+  const [deleteMovementUid, setDeleteMovementUid] = useState<string | null>(null);
+
+  // Stock movement editing state
+  const [editingMovement, setEditingMovement] = useState<StockMovement | null>(null);
+  const [emType, setEmType] = useState<'purchase' | 'sale' | 'adjustment'>('purchase');
+  const [emQty, setEmQty] = useState('');
+  const [emPrice, setEmPrice] = useState('');
+  const [emNotes, setEmNotes] = useState('');
+  const [emSaving, setEmSaving] = useState(false);
 
   useEffect(() => {
     (async () => {
@@ -474,30 +491,144 @@ export default function InventoryPage() {
             {productStats.recentMovements.length > 0 && (
               <div>
                 <h4 className="text-xs font-bold text-text-secondary uppercase tracking-wider mb-2">Stock History</h4>
-                <div className="space-y-1.5 max-h-48 overflow-y-auto">
+                <div className="space-y-1.5 max-h-64 overflow-y-auto">
                   {productStats.recentMovements.map((m) => (
-                    <div key={m.uid} className="flex items-center gap-2 p-2 bg-cream rounded-lg">
-                      <div className={`w-7 h-7 rounded-lg flex items-center justify-center shrink-0 ${
-                        m.type === 'purchase' ? 'bg-navy/10 text-navy'
-                          : m.type === 'sale' ? 'bg-success/10 text-success'
-                            : 'bg-gold/10 text-gold'
-                      }`}>
-                        {m.type === 'purchase' ? <ShoppingCart size={12} />
-                          : m.type === 'sale' ? <TrendingUp size={12} />
-                            : <ArrowRightLeft size={12} />}
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <p className="text-xs font-medium text-text-primary capitalize">{m.type}</p>
-                        <p className="text-[10px] text-text-secondary">{formatDate(m.date)}{m.notes ? ` · ${m.notes}` : ''}</p>
-                      </div>
-                      <div className="text-right shrink-0">
-                        <p className={`text-xs font-bold font-mono ${
-                          m.type === 'purchase' ? 'text-navy' : m.type === 'sale' ? 'text-success' : 'text-gold'
-                        }`}>
-                          {m.type === 'sale' ? '-' : '+'}{m.quantity}
-                        </p>
-                        <p className="text-[9px] text-text-secondary">@ {formatCurrency(m.unitPrice)}</p>
-                      </div>
+                    <div key={m.uid}>
+                      {/* Edit mode for this movement */}
+                      {editingMovement?.uid === m.uid ? (
+                        <div className="p-3 bg-gold/5 rounded-lg border border-gold/20 space-y-2">
+                          <div className="flex items-center justify-between">
+                            <p className="text-xs font-bold text-navy">Edit Movement</p>
+                            <button onClick={() => setEditingMovement(null)} className="p-1 rounded hover:bg-gray-100">
+                              <X size={14} className="text-text-secondary" />
+                            </button>
+                          </div>
+                          <Select
+                            value={emType}
+                            onChange={(e) => setEmType(e.target.value as 'purchase' | 'sale' | 'adjustment')}
+                            options={[
+                              { value: 'purchase', label: 'Purchase (Stock In)' },
+                              { value: 'sale', label: 'Sale (Stock Out)' },
+                              { value: 'adjustment', label: 'Adjustment' },
+                            ]}
+                          />
+                          <div className="grid grid-cols-2 gap-2">
+                            <Input
+                              type="number"
+                              placeholder="Qty"
+                              value={emQty}
+                              onChange={(e) => setEmQty(e.target.value)}
+                            />
+                            <AmountInput
+                              placeholder="Price"
+                              value={emPrice}
+                              onChange={(e) => setEmPrice(e.target.value)}
+                            />
+                          </div>
+                          <Input
+                            placeholder="Notes (optional)"
+                            value={emNotes}
+                            onChange={(e) => setEmNotes(e.target.value)}
+                          />
+                          <div className="flex gap-2">
+                            <Button variant="secondary" size="sm" className="flex-1" onClick={() => setEditingMovement(null)}>
+                              Cancel
+                            </Button>
+                            <Button
+                              variant="gold"
+                              size="sm"
+                              className="flex-1"
+                              disabled={emSaving || !emQty}
+                              onClick={async () => {
+                                setEmSaving(true);
+                                await updateStockMovement(m.uid, {
+                                  type: emType,
+                                  quantity: parseInt(emQty) || 0,
+                                  unitPrice: parseFloat(emPrice) || 0,
+                                  notes: emNotes || undefined,
+                                }, editingMovement);
+                                speak('Movement updated!', 'thumbsup');
+                                setEditingMovement(null);
+                                setEmSaving(false);
+                              }}
+                            >
+                              <Save size={12} className="mr-1" /> Save
+                            </Button>
+                          </div>
+                        </div>
+                      ) : deleteMovementUid === m.uid ? (
+                        /* Delete confirmation for this movement */
+                        <div className="p-3 bg-alert/5 rounded-lg border border-alert/20 space-y-2">
+                          <p className="text-xs font-bold text-alert">Delete this {m.type}?</p>
+                          <p className="text-[10px] text-text-secondary">
+                            This will reverse the stock change ({m.type === 'sale' ? '-' : '+'}{m.quantity} units) and cannot be undone.
+                          </p>
+                          <div className="flex gap-2">
+                            <Button variant="secondary" size="sm" className="flex-1" onClick={() => setDeleteMovementUid(null)}>
+                              Cancel
+                            </Button>
+                            <Button
+                              variant="danger"
+                              size="sm"
+                              className="flex-1"
+                              onClick={async () => {
+                                await deleteStockMovement(m.uid);
+                                speak('Movement deleted and stock adjusted.', 'thumbsup');
+                                setDeleteMovementUid(null);
+                              }}
+                            >
+                              <Trash2 size={12} className="mr-1" /> Delete
+                            </Button>
+                          </div>
+                        </div>
+                      ) : (
+                        /* Normal view mode */
+                        <div className="flex items-center gap-2 p-2 bg-cream rounded-lg group">
+                          <div className={`w-7 h-7 rounded-lg flex items-center justify-center shrink-0 ${
+                            m.type === 'purchase' ? 'bg-navy/10 text-navy'
+                              : m.type === 'sale' ? 'bg-success/10 text-success'
+                                : 'bg-gold/10 text-gold'
+                          }`}>
+                            {m.type === 'purchase' ? <ShoppingCart size={12} />
+                              : m.type === 'sale' ? <TrendingUp size={12} />
+                                : <ArrowRightLeft size={12} />}
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <p className="text-xs font-medium text-text-primary capitalize">{m.type}</p>
+                            <p className="text-[10px] text-text-secondary">{formatDate(m.date)}{m.notes ? ` · ${m.notes}` : ''}</p>
+                          </div>
+                          <div className="text-right shrink-0">
+                            <p className={`text-xs font-bold font-mono ${
+                              m.type === 'purchase' ? 'text-navy' : m.type === 'sale' ? 'text-success' : 'text-gold'
+                            }`}>
+                              {m.type === 'sale' ? '-' : '+'}{m.quantity}
+                            </p>
+                            <p className="text-[9px] text-text-secondary">@ {formatCurrency(m.unitPrice)}</p>
+                          </div>
+                          <div className="flex gap-1 shrink-0">
+                            <button
+                              onClick={() => {
+                                setEditingMovement(m);
+                                setEmType(m.type);
+                                setEmQty(String(m.quantity));
+                                setEmPrice(String(m.unitPrice));
+                                setEmNotes(m.notes || '');
+                              }}
+                              className="p-1.5 rounded-lg hover:bg-gold/10 transition-colors"
+                              title="Edit movement"
+                            >
+                              <Pencil size={11} className="text-gold" />
+                            </button>
+                            <button
+                              onClick={() => setDeleteMovementUid(m.uid)}
+                              className="p-1.5 rounded-lg hover:bg-alert/10 transition-colors"
+                              title="Delete movement"
+                            >
+                              <Trash2 size={11} className="text-alert" />
+                            </button>
+                          </div>
+                        </div>
+                      )}
                     </div>
                   ))}
                 </div>
@@ -522,7 +653,7 @@ export default function InventoryPage() {
                   setTimeout(() => openEditProduct(selectedProduct), 200);
                 }}
               >
-                <Pencil size={14} className="mr-1" /> Edit Product
+                <Pencil size={14} className="mr-1" /> Edit
               </Button>
               <Button
                 variant="secondary"
@@ -534,9 +665,49 @@ export default function InventoryPage() {
                   setTimeout(() => openStockMovement(p), 200);
                 }}
               >
-                <ArrowRightLeft size={14} className="mr-1" /> Add Movement
+                <ArrowRightLeft size={14} className="mr-1" /> Stock
+              </Button>
+              <Button
+                variant="danger"
+                size="md"
+                onClick={() => setDeleteProductConfirm(true)}
+              >
+                <Trash2 size={14} />
               </Button>
             </div>
+
+            {/* Delete product confirmation */}
+            {deleteProductConfirm && (
+              <div className="p-4 bg-alert/5 rounded-xl border border-alert/20 space-y-3">
+                <div className="flex items-center gap-2">
+                  <AlertTriangle size={16} className="text-alert" />
+                  <p className="text-sm font-bold text-alert">Delete {selectedProduct.name}?</p>
+                </div>
+                <p className="text-xs text-text-secondary">
+                  This will permanently delete this product and all its stock movements. This cannot be undone.
+                </p>
+                <div className="flex gap-2">
+                  <Button variant="secondary" size="sm" className="flex-1" onClick={() => setDeleteProductConfirm(false)}>
+                    Cancel
+                  </Button>
+                  <Button
+                    variant="danger"
+                    size="sm"
+                    className="flex-1"
+                    onClick={async () => {
+                      const name = selectedProduct.name;
+                      await deleteProduct(selectedProduct.uid);
+                      speak(`${name} has been deleted.`, 'thumbsup');
+                      setDeleteProductConfirm(false);
+                      setModalMode(null);
+                      setSelectedProduct(null);
+                    }}
+                  >
+                    <Trash2 size={12} className="mr-1" /> Delete Forever
+                  </Button>
+                </div>
+              </div>
+            )}
           </div>
         )}
       </Modal>

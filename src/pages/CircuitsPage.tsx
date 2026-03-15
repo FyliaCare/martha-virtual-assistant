@@ -9,9 +9,11 @@ import {
   Users,
   Plus,
   Pencil,
+  Trash2,
   ChevronRight,
   Globe,
   Building2,
+  AlertTriangle,
 } from 'lucide-react';
 import Card from '../components/ui/Card';
 import Button from '../components/ui/Button';
@@ -25,7 +27,7 @@ import { formatCurrency } from '../utils/helpers';
 import type { Circuit } from '../types';
 
 export default function CircuitsPage() {
-  const { circuits, loading: circuitLoading, loadCircuits, addCircuit, updateCircuit } = useCircuitStore();
+  const { circuits, loading: circuitLoading, loadCircuits, addCircuit, updateCircuit, deleteCircuit } = useCircuitStore();
   const { transactions, loading: txnLoading, loadAll } = useTransactionStore();
   const { speak } = useMarthaStore();
 
@@ -34,6 +36,7 @@ export default function CircuitsPage() {
   const [showAddModal, setShowAddModal] = useState(false);
   const [editingCircuit, setEditingCircuit] = useState<Circuit | null>(null);
   const [expandedId, setExpandedId] = useState<string | null>(null);
+  const [deleteConfirmUid, setDeleteConfirmUid] = useState<string | null>(null);
 
   // Form state
   const [formName, setFormName] = useState('');
@@ -257,10 +260,10 @@ export default function CircuitsPage() {
                           </p>
                         )}
 
+                        <div className="flex gap-2 mt-2">
                         <Button
                           variant="ghost"
                           size="sm"
-                          className="mt-2"
                           onClick={(e) => {
                             e.stopPropagation();
                             openEdit(circuit);
@@ -268,6 +271,17 @@ export default function CircuitsPage() {
                         >
                           <Pencil size={12} className="mr-1" /> Edit
                         </Button>
+                        <Button
+                          variant="danger"
+                          size="sm"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setDeleteConfirmUid(circuit.uid);
+                          }}
+                        >
+                          <Trash2 size={12} className="mr-1" /> Delete
+                        </Button>
+                        </div>
                       </div>
                     </motion.div>
                   )}
@@ -325,6 +339,49 @@ export default function CircuitsPage() {
           >
             {editingCircuit ? 'Save Changes' : 'Add Circuit'}
           </Button>
+        </div>
+      </Modal>
+
+      {/* Delete Confirmation Modal */}
+      <Modal
+        isOpen={deleteConfirmUid !== null}
+        onClose={() => setDeleteConfirmUid(null)}
+        title="Delete Circuit?"
+      >
+        <div className="space-y-4">
+          <div className="p-4 bg-alert/5 rounded-xl border border-alert/20">
+            <div className="flex items-center gap-3 mb-2">
+              <AlertTriangle size={20} className="text-alert" />
+              <p className="text-sm font-bold text-navy">
+                {circuits.find((c) => c.uid === deleteConfirmUid)?.name}
+              </p>
+            </div>
+            <p className="text-xs text-text-secondary">
+              This will permanently delete this circuit. Transactions linked to this circuit will NOT be deleted but will lose their circuit reference.
+            </p>
+          </div>
+          <p className="text-xs text-alert font-semibold">This action cannot be undone.</p>
+          <div className="flex gap-3">
+            <Button variant="secondary" size="lg" className="flex-1" onClick={() => setDeleteConfirmUid(null)}>
+              Cancel
+            </Button>
+            <Button
+              variant="danger"
+              size="lg"
+              className="flex-1"
+              onClick={async () => {
+                if (deleteConfirmUid) {
+                  const name = circuits.find((c) => c.uid === deleteConfirmUid)?.name;
+                  await deleteCircuit(deleteConfirmUid);
+                  speak(`${name} circuit deleted.`, 'thumbsup');
+                  setDeleteConfirmUid(null);
+                  setExpandedId(null);
+                }
+              }}
+            >
+              <Trash2 size={14} className="mr-1" /> Delete
+            </Button>
+          </div>
         </div>
       </Modal>
     </div>
