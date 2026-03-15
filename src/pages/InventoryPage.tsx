@@ -2,7 +2,7 @@
 // Inventory Page — Product grid with stock management
 // ============================================================
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import { motion } from 'framer-motion';
 import {
   Package,
@@ -10,6 +10,13 @@ import {
   AlertTriangle,
   ArrowRightLeft,
   Pencil,
+  ShoppingCart,
+  TrendingUp,
+  TrendingDown,
+  BarChart3,
+  Calendar,
+  X,
+  Layers,
 } from 'lucide-react';
 import Card from '../components/ui/Card';
 import Button from '../components/ui/Button';
@@ -19,10 +26,10 @@ import Modal from '../components/ui/Modal';
 import MarthaAssistant from '../components/martha/MarthaAssistant';
 import { useInventoryStore } from '../store/useInventoryStore';
 import { useMarthaStore } from '../store/useMarthaStore';
-import { formatCurrency, toISODate, getCurrentQuarter, getCurrentYear } from '../utils/helpers';
+import { formatCurrency, formatDate, toISODate, getCurrentQuarter, getCurrentYear } from '../utils/helpers';
 import type { Product, ProductCategory, Quarter } from '../types';
 
-type ModalMode = 'add-product' | 'edit-product' | 'stock-movement' | null;
+type ModalMode = 'add-product' | 'edit-product' | 'stock-movement' | 'product-detail' | null;
 
 export default function InventoryPage() {
   const {
@@ -71,6 +78,38 @@ export default function InventoryPage() {
   }, []);
 
   const lowStockProducts = getLowStockProducts();
+
+  // Product detail computed stats
+  const { movements } = useInventoryStore();
+  const productStats = useMemo(() => {
+    if (!selectedProduct) return null;
+    const pm = movements.filter((m) => m.productId === selectedProduct.uid);
+    const purchased = pm.filter((m) => m.type === 'purchase');
+    const sold = pm.filter((m) => m.type === 'sale');
+    const adjusted = pm.filter((m) => m.type === 'adjustment');
+    const totalPurchased = purchased.reduce((s, m) => s + m.quantity, 0);
+    const totalSold = sold.reduce((s, m) => s + m.quantity, 0);
+    const totalAdjusted = adjusted.reduce((s, m) => s + m.quantity, 0);
+    const totalCostSpent = purchased.reduce((s, m) => s + m.quantity * m.unitPrice, 0);
+    const totalRevenue = sold.reduce((s, m) => s + m.quantity * m.unitPrice, 0);
+    const profitMargin = selectedProduct.sellingPrice > 0
+      ? ((selectedProduct.sellingPrice - selectedProduct.costPrice) / selectedProduct.sellingPrice) * 100
+      : 0;
+    return {
+      totalPurchased,
+      totalSold,
+      totalAdjusted,
+      totalCostSpent,
+      totalRevenue,
+      profitMargin,
+      recentMovements: pm.slice(0, 20),
+    };
+  }, [selectedProduct, movements]);
+
+  const openProductDetail = (product: Product) => {
+    setSelectedProduct(product);
+    setModalMode('product-detail');
+  };
 
   const resetProductForm = () => {
     setPName('');
@@ -271,8 +310,8 @@ export default function InventoryPage() {
             const isLow = product.currentStock <= product.reorderLevel;
 
             return (
-              <Card key={product.uid} delay={0.05 + i * 0.03}>
-                <div className="p-3 flex items-center gap-3">
+              <Card key={product.uid} delay={0.05 + i * 0.03} className="cursor-pointer lg:hover:shadow-md lg:transition-shadow">
+                <div className="p-3 flex items-center gap-3" onClick={() => openProductDetail(product)}>
                   <div
                     className={`w-10 h-10 rounded-xl flex items-center justify-center ${
                       isLow ? 'bg-alert/10' : 'bg-navy/5'
@@ -317,8 +356,8 @@ export default function InventoryPage() {
                   </div>
 
                   <button
-                    onClick={() => openEditProduct(product)}
-                    className="w-7 h-7 flex items-center justify-center rounded-lg bg-gray-50"
+                    onClick={(e) => { e.stopPropagation(); openEditProduct(product); }}
+                    className="w-7 h-7 flex items-center justify-center rounded-lg bg-gray-50 hover:bg-gray-100 transition-colors"
                   >
                     <Pencil size={12} className="text-text-light" />
                   </button>
@@ -347,6 +386,160 @@ export default function InventoryPage() {
           })}
         </div>
       )}
+
+      {/* Product Detail Modal */}
+      <Modal
+        isOpen={modalMode === 'product-detail' && selectedProduct !== null}
+        onClose={() => {
+          setModalMode(null);
+          setSelectedProduct(null);
+        }}
+        title={selectedProduct?.name || 'Product Details'}
+      >
+        {selectedProduct && productStats && (
+          <div className="space-y-5">
+            {/* Product header */}
+            <div className="flex items-center gap-3">
+              <div className={`w-12 h-12 rounded-xl flex items-center justify-center ${
+                selectedProduct.currentStock <= selectedProduct.reorderLevel ? 'bg-alert/10' : 'bg-navy/5'
+              }`}>
+                <Package size={22} className={selectedProduct.currentStock <= selectedProduct.reorderLevel ? 'text-alert' : 'text-navy'} />
+              </div>
+              <div className="flex-1">
+                <div className="flex items-center gap-2">
+                  <p className="text-base font-bold text-navy">{selectedProduct.name}</p>
+                  <span className={`text-[9px] px-2 py-0.5 rounded-full font-semibold ${categoryColors[selectedProduct.category]}`}>
+                    {selectedProduct.category}
+                  </span>
+                </div>
+                <p className="text-xs text-text-secondary">Cost: {formatCurrency(selectedProduct.costPrice)} · Sell: {formatCurrency(selectedProduct.sellingPrice)}</p>
+              </div>
+            </div>
+
+            {/* Stats grid */}
+            <div className="grid grid-cols-2 gap-3">
+              <div className="p-3 bg-navy/5 rounded-xl text-center">
+                <div className="flex items-center justify-center gap-1 mb-1">
+                  <ShoppingCart size={14} className="text-navy" />
+                </div>
+                <p className="text-lg font-bold font-mono text-navy">{productStats.totalPurchased}</p>
+                <p className="text-[10px] text-text-secondary">Total Bought</p>
+              </div>
+              <div className="p-3 bg-success/5 rounded-xl text-center">
+                <div className="flex items-center justify-center gap-1 mb-1">
+                  <TrendingUp size={14} className="text-success" />
+                </div>
+                <p className="text-lg font-bold font-mono text-success">{productStats.totalSold}</p>
+                <p className="text-[10px] text-text-secondary">Total Sold</p>
+              </div>
+              <div className="p-3 bg-gold/10 rounded-xl text-center">
+                <div className="flex items-center justify-center gap-1 mb-1">
+                  <Layers size={14} className="text-gold" />
+                </div>
+                <p className={`text-lg font-bold font-mono ${selectedProduct.currentStock <= selectedProduct.reorderLevel ? 'text-alert' : 'text-navy'}`}>{selectedProduct.currentStock}</p>
+                <p className="text-[10px] text-text-secondary">In Stock</p>
+              </div>
+              <div className="p-3 bg-purple-50 rounded-xl text-center">
+                <div className="flex items-center justify-center gap-1 mb-1">
+                  <BarChart3 size={14} className="text-purple-600" />
+                </div>
+                <p className="text-lg font-bold font-mono text-purple-600">{productStats.profitMargin.toFixed(0)}%</p>
+                <p className="text-[10px] text-text-secondary">Margin</p>
+              </div>
+            </div>
+
+            {/* Financial summary */}
+            <Card className="p-3">
+              <div className="flex items-center justify-between py-1.5 border-b border-border/30">
+                <span className="text-xs text-text-secondary">Total Cost (Purchased)</span>
+                <span className="text-xs font-bold font-mono text-alert">{formatCurrency(productStats.totalCostSpent)}</span>
+              </div>
+              <div className="flex items-center justify-between py-1.5 border-b border-border/30">
+                <span className="text-xs text-text-secondary">Total Revenue (Sold)</span>
+                <span className="text-xs font-bold font-mono text-success">{formatCurrency(productStats.totalRevenue)}</span>
+              </div>
+              <div className="flex items-center justify-between py-1.5 border-b border-border/30">
+                <span className="text-xs text-text-secondary">Profit</span>
+                <span className={`text-xs font-bold font-mono ${productStats.totalRevenue - productStats.totalCostSpent >= 0 ? 'text-success' : 'text-alert'}`}>
+                  {productStats.totalRevenue - productStats.totalCostSpent >= 0 ? '+' : ''}{formatCurrency(productStats.totalRevenue - productStats.totalCostSpent)}
+                </span>
+              </div>
+              <div className="flex items-center justify-between py-1.5">
+                <span className="text-xs text-text-secondary">Current Stock Value</span>
+                <span className="text-xs font-bold font-mono text-navy">{formatCurrency(selectedProduct.currentStock * selectedProduct.costPrice)}</span>
+              </div>
+            </Card>
+
+            {/* Stock movement history */}
+            {productStats.recentMovements.length > 0 && (
+              <div>
+                <h4 className="text-xs font-bold text-text-secondary uppercase tracking-wider mb-2">Stock History</h4>
+                <div className="space-y-1.5 max-h-48 overflow-y-auto">
+                  {productStats.recentMovements.map((m) => (
+                    <div key={m.uid} className="flex items-center gap-2 p-2 bg-cream rounded-lg">
+                      <div className={`w-7 h-7 rounded-lg flex items-center justify-center shrink-0 ${
+                        m.type === 'purchase' ? 'bg-navy/10 text-navy'
+                          : m.type === 'sale' ? 'bg-success/10 text-success'
+                            : 'bg-gold/10 text-gold'
+                      }`}>
+                        {m.type === 'purchase' ? <ShoppingCart size={12} />
+                          : m.type === 'sale' ? <TrendingUp size={12} />
+                            : <ArrowRightLeft size={12} />}
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-xs font-medium text-text-primary capitalize">{m.type}</p>
+                        <p className="text-[10px] text-text-secondary">{formatDate(m.date)}{m.notes ? ` · ${m.notes}` : ''}</p>
+                      </div>
+                      <div className="text-right shrink-0">
+                        <p className={`text-xs font-bold font-mono ${
+                          m.type === 'purchase' ? 'text-navy' : m.type === 'sale' ? 'text-success' : 'text-gold'
+                        }`}>
+                          {m.type === 'sale' ? '-' : '+'}{m.quantity}
+                        </p>
+                        <p className="text-[9px] text-text-secondary">@ {formatCurrency(m.unitPrice)}</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {productStats.recentMovements.length === 0 && (
+              <div className="text-center py-4">
+                <Calendar size={20} className="mx-auto text-text-light mb-2" />
+                <p className="text-xs text-text-secondary">No stock movements recorded yet</p>
+              </div>
+            )}
+
+            {/* Quick actions */}
+            <div className="flex gap-2">
+              <Button
+                variant="gold"
+                size="md"
+                className="flex-1"
+                onClick={() => {
+                  setModalMode(null);
+                  setTimeout(() => openEditProduct(selectedProduct), 200);
+                }}
+              >
+                <Pencil size={14} className="mr-1" /> Edit Product
+              </Button>
+              <Button
+                variant="secondary"
+                size="md"
+                className="flex-1"
+                onClick={() => {
+                  const p = selectedProduct;
+                  setModalMode(null);
+                  setTimeout(() => openStockMovement(p), 200);
+                }}
+              >
+                <ArrowRightLeft size={14} className="mr-1" /> Add Movement
+              </Button>
+            </div>
+          </div>
+        )}
+      </Modal>
 
       {/* Add/Edit Product Modal */}
       <Modal
