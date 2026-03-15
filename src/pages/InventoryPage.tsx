@@ -12,7 +12,6 @@ import {
   Pencil,
   ShoppingCart,
   TrendingUp,
-  TrendingDown,
   BarChart3,
   Calendar,
   X,
@@ -77,6 +76,15 @@ export default function InventoryPage() {
   const [emNotes, setEmNotes] = useState('');
   const [emSaving, setEmSaving] = useState(false);
 
+  // Inline add-movement state (inside product detail modal)
+  const [addingMovement, setAddingMovement] = useState(false);
+  const [nmType, setNmType] = useState<'purchase' | 'sale' | 'adjustment'>('sale');
+  const [nmQty, setNmQty] = useState('');
+  const [nmPrice, setNmPrice] = useState('');
+  const [nmDate, setNmDate] = useState(toISODate(new Date()));
+  const [nmNotes, setNmNotes] = useState('');
+  const [nmSaving, setNmSaving] = useState(false);
+
   useEffect(() => {
     (async () => {
       await loadProducts();
@@ -93,6 +101,20 @@ export default function InventoryPage() {
     })();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  // Keep selectedProduct in sync with store after stock edits/deletes
+  useEffect(() => {
+    if (selectedProduct) {
+      const fresh = products.find((p) => p.uid === selectedProduct.uid);
+      if (fresh) {
+        setSelectedProduct(fresh);
+      } else {
+        // Product was deleted from the store
+        setSelectedProduct(null);
+        setModalMode(null);
+      }
+    }
+  }, [products]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const lowStockProducts = getLowStockProducts();
 
@@ -410,6 +432,7 @@ export default function InventoryPage() {
         onClose={() => {
           setModalMode(null);
           setSelectedProduct(null);
+          setAddingMovement(false);
         }}
         title={selectedProduct?.name || 'Product Details'}
       >
@@ -488,9 +511,118 @@ export default function InventoryPage() {
             </Card>
 
             {/* Stock movement history */}
-            {productStats.recentMovements.length > 0 && (
+            {(productStats.recentMovements.length > 0 || addingMovement) && (
               <div>
-                <h4 className="text-xs font-bold text-text-secondary uppercase tracking-wider mb-2">Stock History</h4>
+                <div className="flex items-center justify-between mb-2">
+                  <h4 className="text-xs font-bold text-text-secondary uppercase tracking-wider">Stock History</h4>
+                  {!addingMovement && (
+                    <button
+                      onClick={() => {
+                        setNmType('sale');
+                        setNmQty('');
+                        setNmPrice(selectedProduct.sellingPrice.toFixed(2));
+                        setNmDate(toISODate(new Date()));
+                        setNmNotes('');
+                        setAddingMovement(true);
+                      }}
+                      className="flex items-center gap-1 text-[10px] font-semibold text-gold hover:text-gold/80 transition-colors"
+                    >
+                      <Plus size={12} /> Add Movement
+                    </button>
+                  )}
+                </div>
+
+                {/* Inline add-movement form */}
+                {addingMovement && (
+                  <div className="p-3 bg-success/5 rounded-lg border border-success/20 space-y-2 mb-2">
+                    <div className="flex items-center justify-between">
+                      <p className="text-xs font-bold text-navy">New Stock Movement</p>
+                      <button onClick={() => setAddingMovement(false)} className="p-1 rounded hover:bg-gray-100">
+                        <X size={14} className="text-text-secondary" />
+                      </button>
+                    </div>
+                    <Select
+                      value={nmType}
+                      onChange={(e) => {
+                        const t = e.target.value as 'purchase' | 'sale' | 'adjustment';
+                        setNmType(t);
+                        setNmPrice(t === 'sale' ? selectedProduct.sellingPrice.toFixed(2) : selectedProduct.costPrice.toFixed(2));
+                      }}
+                      options={[
+                        { value: 'sale', label: 'Sale (Stock Out)' },
+                        { value: 'purchase', label: 'Purchase (Stock In)' },
+                        { value: 'adjustment', label: 'Adjustment' },
+                      ]}
+                    />
+                    <div className="grid grid-cols-2 gap-2">
+                      <Input
+                        type="number"
+                        placeholder="Qty"
+                        value={nmQty}
+                        onChange={(e) => setNmQty(e.target.value)}
+                      />
+                      <AmountInput
+                        placeholder="Unit Price"
+                        value={nmPrice}
+                        onChange={(e) => setNmPrice(e.target.value)}
+                      />
+                    </div>
+                    <Input
+                      type="date"
+                      value={nmDate}
+                      onChange={(e) => setNmDate(e.target.value)}
+                    />
+                    <Input
+                      placeholder="Notes (optional)"
+                      value={nmNotes}
+                      onChange={(e) => setNmNotes(e.target.value)}
+                    />
+                    <div className="flex gap-2">
+                      <Button variant="secondary" size="sm" className="flex-1" onClick={() => setAddingMovement(false)}>
+                        Cancel
+                      </Button>
+                      <Button
+                        variant="gold"
+                        size="sm"
+                        className="flex-1"
+                        disabled={nmSaving || !nmQty || parseInt(nmQty) <= 0}
+                        onClick={async () => {
+                          const qty = parseInt(nmQty) || 0;
+                          if (qty <= 0) return;
+                          if (nmType === 'sale' && qty > selectedProduct.currentStock) {
+                            speak(`Only ${selectedProduct.currentStock} units available in stock.`, 'warning');
+                            return;
+                          }
+                          setNmSaving(true);
+                          const d = new Date(nmDate);
+                          const q = Math.ceil((d.getMonth() + 1) / 3) as Quarter;
+                          await addStockMovement({
+                            productId: selectedProduct.uid,
+                            type: nmType,
+                            quantity: qty,
+                            unitPrice: parseFloat(nmPrice) || 0,
+                            date: nmDate,
+                            quarter: q,
+                            year: d.getFullYear(),
+                            notes: nmNotes || undefined,
+                          });
+                          speak(
+                            nmType === 'sale'
+                              ? `${qty} units sold recorded.`
+                              : nmType === 'purchase'
+                                ? `${qty} units purchased recorded.`
+                                : `Stock adjustment recorded.`,
+                            'thumbsup'
+                          );
+                          setAddingMovement(false);
+                          setNmSaving(false);
+                        }}
+                      >
+                        <Save size={12} className="mr-1" /> Record
+                      </Button>
+                    </div>
+                  </div>
+                )}
                 <div className="space-y-1.5 max-h-64 overflow-y-auto">
                   {productStats.recentMovements.map((m) => (
                     <div key={m.uid}>
@@ -635,10 +767,23 @@ export default function InventoryPage() {
               </div>
             )}
 
-            {productStats.recentMovements.length === 0 && (
+            {productStats.recentMovements.length === 0 && !addingMovement && (
               <div className="text-center py-4">
                 <Calendar size={20} className="mx-auto text-text-light mb-2" />
                 <p className="text-xs text-text-secondary">No stock movements recorded yet</p>
+                <button
+                  onClick={() => {
+                    setNmType('sale');
+                    setNmQty('');
+                    setNmPrice(selectedProduct.sellingPrice.toFixed(2));
+                    setNmDate(toISODate(new Date()));
+                    setNmNotes('');
+                    setAddingMovement(true);
+                  }}
+                  className="mt-2 text-[11px] font-semibold text-gold hover:text-gold/80 transition-colors"
+                >
+                  + Add first movement
+                </button>
               </div>
             )}
 
