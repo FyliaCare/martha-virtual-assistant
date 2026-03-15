@@ -29,6 +29,13 @@ function stripId<T extends { id?: number }>(record: T): Omit<T, 'id'> {
   return rest;
 }
 
+/** Remove undefined values from an object — Firestore rejects `undefined` */
+function stripUndefined(obj: Record<string, unknown>): Record<string, unknown> {
+  return Object.fromEntries(
+    Object.entries(obj).filter(([, v]) => v !== undefined)
+  );
+}
+
 // ── Push single document to Firestore ──
 
 export async function syncDocToCloud(
@@ -37,7 +44,7 @@ export async function syncDocToCloud(
   data: Record<string, unknown>,
 ) {
   try {
-    await setDoc(doc(firestore, collectionName, uid), data);
+    await setDoc(doc(firestore, collectionName, uid), stripUndefined(data));
   } catch (e) {
     console.warn(`[Sync] Push ${collectionName}/${uid} failed:`, e);
   }
@@ -66,7 +73,7 @@ async function batchPush<T extends { uid: string; id?: number }>(
     const batch = writeBatch(firestore);
     for (const record of chunk) {
       const ref = doc(firestore, collectionName, record.uid);
-      batch.set(ref, stripId(record));
+      batch.set(ref, stripUndefined(stripId(record) as Record<string, unknown>));
     }
     await batch.commit();
   }

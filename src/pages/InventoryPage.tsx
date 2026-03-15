@@ -788,37 +788,56 @@ export default function InventoryPage() {
             )}
 
             {/* Quick actions */}
-            <div className="flex gap-2">
-              <Button
-                variant="gold"
-                size="md"
-                className="flex-1"
-                onClick={() => {
-                  setModalMode(null);
-                  setTimeout(() => openEditProduct(selectedProduct), 200);
-                }}
-              >
-                <Pencil size={14} className="mr-1" /> Edit
-              </Button>
-              <Button
-                variant="secondary"
-                size="md"
-                className="flex-1"
-                onClick={() => {
-                  const p = selectedProduct;
-                  setModalMode(null);
-                  setTimeout(() => openStockMovement(p), 200);
-                }}
-              >
-                <ArrowRightLeft size={14} className="mr-1" /> Stock
-              </Button>
-              <Button
-                variant="danger"
-                size="md"
-                onClick={() => setDeleteProductConfirm(true)}
-              >
-                <Trash2 size={14} />
-              </Button>
+            <div className="space-y-2">
+              {!addingMovement && (
+                <Button
+                  variant="primary"
+                  size="lg"
+                  className="w-full"
+                  onClick={() => {
+                    setNmType('sale');
+                    setNmQty('');
+                    setNmPrice(selectedProduct.sellingPrice.toFixed(2));
+                    setNmDate(toISODate(new Date()));
+                    setNmNotes('');
+                    setAddingMovement(true);
+                  }}
+                >
+                  <Plus size={16} className="mr-1" /> Add Sale / Purchase
+                </Button>
+              )}
+              <div className="flex gap-2">
+                <Button
+                  variant="gold"
+                  size="md"
+                  className="flex-1"
+                  onClick={() => {
+                    setModalMode(null);
+                    setTimeout(() => openEditProduct(selectedProduct), 200);
+                  }}
+                >
+                  <Pencil size={14} className="mr-1" /> Edit
+                </Button>
+                <Button
+                  variant="secondary"
+                  size="md"
+                  className="flex-1"
+                  onClick={() => {
+                    const p = selectedProduct;
+                    setModalMode(null);
+                    setTimeout(() => openStockMovement(p), 200);
+                  }}
+                >
+                  <ArrowRightLeft size={14} className="mr-1" /> Stock
+                </Button>
+                <Button
+                  variant="danger"
+                  size="md"
+                  onClick={() => setDeleteProductConfirm(true)}
+                >
+                  <Trash2 size={14} />
+                </Button>
+              </div>
             </div>
 
             {/* Delete product confirmation */}
